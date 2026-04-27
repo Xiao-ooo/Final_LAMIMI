@@ -12,31 +12,30 @@
 
     <div class="fade-overlay" id="fadeOverlay"></div>
     <div class="scan-flash" id="scanFlash"></div>
-    <button class="doc-folder-btn hidden" id="docFolderBtn" onclick="openDocumentary()">
-        Case File
-    </button>
-    <div class="documentary-overlay hidden" id="documentaryOverlay">
-        <div class="documentary-sheet">
-            <button class="documentary-close" onclick="closeDocumentary()">Close</button>
-            <div class="documentary-canvas">
-                <img src="asset/cup.png" alt="Coffee sleeve evidence" class="doc-item doc-item-cup hidden" id="docItemCup">
-                <img src="asset/rent.png" alt="Rent ticket evidence" class="doc-item doc-item-rent hidden" id="docItemRent">
-                <img src="asset/airpods.png" alt="Earphones evidence" class="doc-item doc-item-airpods hidden" id="docItemAirpods">
-                <img src="asset/pin.png" alt="Pin evidence" class="doc-item doc-item-pin hidden" id="docItemPin">
-                <img src="asset/tie.png" alt="Tie evidence" class="doc-item doc-item-tie hidden" id="docItemTie">
-                <button class="doc-item-hotspot hidden" id="docCupHotspot"
-                    onclick="playDocumentaryMemory('53C19186520001')" aria-label="Replay coffee sleeve memory"></button>
-                <button class="doc-item-hotspot hidden" id="docRentHotspot"
-                    onclick="playDocumentaryMemory('53AC8C86520001')" aria-label="Replay rent ticket memory"></button>
-                <button class="doc-item-hotspot hidden" id="docAirpodsHotspot"
-                    onclick="playDocumentaryMemory('53C97A86520001')" aria-label="Replay earphones memory"></button>
-                <button class="doc-item-hotspot hidden" id="docPinHotspot"
-                    onclick="playDocumentaryMemory('53B28486520001')" aria-label="Replay pin memory"></button>
-                <button class="doc-item-hotspot hidden" id="docTieHotspot"
-                    onclick="playDocumentaryMemory('532B6E86520001')" aria-label="Replay tie memory"></button>
-            </div>
+
+    <!-- MEMORY OVERLAY — triggered by NFC scan -->
+    <div class="memory-overlay hidden" id="memoryOverlay">
+        <img class="memory-overlay-image" id="memoryOverlayImage" src="" alt="">
+        <button class="memory-overlay-close" onclick="closeMemoryOverlay()">✕</button>
+        <div class="memory-overlay-content" onclick="advanceMemoryOverlay()">
+            <div class="memory-overlay-time" id="memoryOverlayTime"></div>
+            <div class="memory-overlay-lines" id="memoryOverlayLines"></div>
+            <span class="memory-overlay-hint" id="memoryOverlayHint"></span>
         </div>
     </div>
+
+    <!-- ══════════════════════════════════════════════
+         DEV PANEL — simulate NFC scans without hardware
+    ══════════════════════════════════════════════ -->
+    <div class="dev-panel" id="devPanel">
+        <div class="dev-panel-label">DEV · Scan Object</div>
+        <button onclick="devScan('53C19186520001')">🚇 metro card</button>
+        <button onclick="devScan('53AC8C86520001')">📛 barista pin</button>
+        <button onclick="devScan('53B28486520001')">☕ coffee cup</button>
+        <button onclick="devScan('53A36287520001')">🧾 Rent Paper</button>
+        <button onclick="devScan('53C97A86520001')">🎵 AirPod</button>
+    </div>
+
     <!--01 · INTRO — Title card-->
     <div class="scene active" id="scene-intro">
         <div class="scene-bg"></div>
@@ -50,8 +49,6 @@
     <!--02 · INTRODUCTION — Background + how to play-->
     <div class="scene" id="scene-introduction">
         <div class="scene-bg"></div>
-
-        <!-- page container -->
         <div class="introduction-body">
             <div class="introduction-page" id="introductionPage">
                 <div class="introduction-page-num" id="introductionNum">01 / 03</div>
@@ -71,27 +68,24 @@
         </div>
     </div>
 
-    <!-- 
-         03 · WHITE ROOM — Interrogation hub
-         States:
-           - Investigator speaks (opening or per-object prompt)
-           - Scan indicator (waiting for NFC / dev click)-->
+    <!--03 · WHITE ROOM — Main investigation-->
     <div class="scene" id="scene-investigation">
         <div class="scene-bg"></div>
         <div class="investigation-ui">
 
-            <!-- top bar -->
             <div class="top-bar">
                 <div>
                     <div class="location-label">Location &nbsp;·&nbsp; The White Room</div>
                     <div class="case-name">The Last Witness</div>
                 </div>
-                <div class="evidence-tracker" id="evidenceTracker"></div>
+                <div class="conn-status">
+                    <span class="conn-dot" id="connDot"></span>
+                    <span class="conn-text" id="connText">offline</span>
+                </div>
             </div>
 
             <div class="inv-spacer"></div>
 
-            <!-- investigator dialogue (opening + per-object prompts) -->
             <div id="invDialogue" class="inv-dialogue hidden">
                 <div class="dialogue-panel" id="invPanel">
                     <div class="dialogue-speaker" id="invSpeaker"></div>
@@ -102,52 +96,30 @@
                 </div>
             </div>
 
-            <!-- scan state: waiting for NFC or dev click -->
-            <div id="scanWait" class="scan-wait hidden">
-                <div class="scan-icon-wrap">
-                    <span class="scan-icon">◈</span>
-                </div>
-                <div class="scan-label">Place the object on the reader</div>
-                <!-- dev mode: shows clickable button for current object -->
-                <button class="dev-trigger hidden" id="devTrigger" onclick="devScanCurrent()"></button>
-                <div class="nfc-status" id="nfcStatus"></div>
-            </div>
-
         </div>
     </div>
 
-    <!-- 
-         04 · MEMORY SCENES — built by game.js
-         Each scene has phases:
-           memory lines → investigator question → player choices → response
-    -->
-
-    <!-- ══════════════════════════════════════════════
-         05 · CHOICE — Final decision
-    ══════════════════════════════════════════════ -->
+    <!-- 04 · CHOICE — Final decision -->
     <div class="scene" id="scene-choice">
         <div class="scene-bg"></div>
         <div class="choice-content">
-            <div class="choice-eyebrow">All fragments recovered</div>
+            <div class="choice-eyebrow">The question is waiting.</div>
             <div class="choice-question">
-                The investigator is waiting.<br>
-                What do you tell him?
+                The person who fell —<br>did you know who they were?
             </div>
             <div class="choice-buttons">
                 <button class="choice-btn comply" onclick="chooseEnding('comply')">
-                    Tell him what I remember
+                    Yes. I recognised them.
                 </button>
                 <button class="choice-btn resist" onclick="chooseEnding('resist')">
-                    I can't be certain
+                    I can't be certain.
                 </button>
             </div>
             <div class="choice-subtext">This choice cannot be undone</div>
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════
-         06a · ENDING A — Comply
-    ══════════════════════════════════════════════ -->
+    <!-- 05a · ENDING A — Comply -->
     <div class="scene" id="scene-ending-comply">
         <div class="scene-bg"></div>
         <div class="ending-content">
@@ -158,9 +130,7 @@
         </div>
     </div>
 
-    <!-- ══════════════════════════════════════════════
-         06b · ENDING B — Resist
-    ══════════════════════════════════════════════ -->
+    <!-- 05b · ENDING B — Resist -->
     <div class="scene" id="scene-ending-resist">
         <div class="scene-bg"></div>
         <div class="ending-content">
@@ -171,19 +141,22 @@
         </div>
     </div>
 
-    <!-- socket.io optional — works without server for dev/testing -->
     <script>
-        var sio = document.createElement('script');
-        sio.src = '/socket.io/socket.io.js';
-        sio.onload = loadGame;
-        sio.onerror = loadGame;
-        document.head.appendChild(sio);
-        function loadGame() {
-            var g = document.createElement('script');
-            g.src = 'game.js';
-            document.body.appendChild(g);
-        }
-    </script>
+    function loadGame() {
+        if (typeof init !== 'undefined') return; // 防止重复加载
+        var g = document.createElement('script');
+        g.src = 'game.js';
+        document.body.appendChild(g);
+    }
+
+    var sio = document.createElement('script');
+    sio.src = '/socket.io/socket.io.js';
+    sio.onload = loadGame;
+    sio.onerror = loadGame;
+    document.head.appendChild(sio);
+
+    setTimeout(loadGame, 2000); // 保险，2秒后强制加载
+</script>
 </body>
 
 </html>

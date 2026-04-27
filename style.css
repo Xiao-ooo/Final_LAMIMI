@@ -1,5 +1,5 @@
 /* styles for The Last Witness
-   organized by scene — intro, introduction, white room, memory, choice, ending */
+   organized by scene â€” intro, introduction, white room, memory, choice, ending */
 
    @font-face {
     font-family: 'Handwrite';
@@ -50,164 +50,12 @@ body {
     background-position: center;
 }
 
-/* quick hide class — used all over the place in game.js */
+/* quick hide class â€” used all over the place in game.js */
 .hidden {
     display: none !important;
 }
 
-/* documentary access button and overlay */
-.doc-folder-btn {
-    position: fixed;
-    top: 1.15em;
-    right: 1.2em;
-    z-index: 120;
-    padding: 0.7em 1.35em;
-    border: 1px solid rgba(220, 205, 170, 0.55);
-    background: rgba(15, 12, 8, 0.74);
-    color: #e8dcc8;
-    font-family: 'Handwrite', 'Georgia', serif;
-    font-size: 0.74em;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background 0.25s, border-color 0.25s, box-shadow 0.25s;
-    animation: case-file-pulse 1.8s ease-in-out infinite;
-}
-
-.doc-folder-btn:hover {
-    background: rgba(200, 169, 110, 0.18);
-    border-color: rgba(220, 205, 170, 0.9);
-    animation-play-state: paused;
-}
-
-.documentary-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 130;
-    background: rgba(6, 4, 2, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1.2em;
-}
-
-.documentary-sheet {
-    position: relative;
-    width: min(1050px, 92vw);
-}
-
-.documentary-canvas {
-    width: 100%;
-    aspect-ratio: 4 / 3;
-    background: url('asset/documentary.png') center / 100% 100% no-repeat;
-    position: relative;
-}
-
-.documentary-close {
-    position: absolute;
-    top: 0.35em;
-    right: 0.35em;
-    z-index: 2;
-    border: none;
-    background: rgba(20, 16, 12, 0.62);
-    color: #f0e6d6;
-    padding: 0.5em 0.8em;
-    font-family: 'Handwrite', 'Georgia', serif;
-    font-size: 0.68em;
-    letter-spacing: 0.14em;
-    text-transform: uppercase;
-    cursor: pointer;
-}
-
-.doc-item {
-    position: absolute;
-    max-width: none;
-    height: auto;
-    pointer-events: none;
-}
-
-.doc-item-cup {
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-}
-
-.doc-item-rent {
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-}
-
-.doc-item-airpods,
-.doc-item-pin,
-.doc-item-tie {
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: fill;
-}
-
-.doc-item:hover {
-    filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.55));
-}
-
-.doc-item-hotspot {
-    position: absolute;
-    left: 35.85%;
-    top: 25.18%;
-    width: 12.37%;
-    height: 21.89%;
-    border: none;
-    background: transparent;
-    border-radius: 50%;
-    cursor: pointer;
-}
-
-#docRentHotspot {
-    left: 33.86%;
-    top: 53.11%;
-    width: 13.18%;
-    height: 21.83%;
-    border-radius: 32%;
-}
-
-#docAirpodsHotspot {
-    left: 55.97%;
-    top: 38.84%;
-    width: 15.21%;
-    height: 18.96%;
-    border-radius: 28%;
-}
-
-#docPinHotspot {
-    left: 54.53%;
-    top: 64.76%;
-    width: 12.8%;
-    height: 22.07%;
-    border-radius: 32%;
-}
-
-#docTieHotspot {
-    left: 37.63%;
-    top: 82.26%;
-    width: 9.92%;
-    height: 15.98%;
-    border-radius: 28%;
-}
-
-@keyframes case-file-pulse {
-    0%,
-    100% {
-        box-shadow: 0 0 0 rgba(235, 213, 167, 0);
-    }
-    50% {
-        box-shadow: 0 0 16px rgba(235, 213, 167, 0.5);
-    }
-}
-
-/* ── 01 · INTRO — the title card ── */
+/* â”€â”€ 01 Â· INTRO â€” the title card â”€â”€ */
 #scene-intro .scene-bg {
     background-color: #0e0c0a;
     background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/Intro1.jpeg');
@@ -244,8 +92,6 @@ body {
     animation: fadeUp 1.6s ease 0.4s forwards;
 }
 
-
-
 .start-btn {
     margin-top: 3.8em;
     padding: 0.9em 3.4em;
@@ -272,16 +118,14 @@ body {
         opacity: 0;
         transform: translateY(14px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
 
-/* ── 02 · INTRODUCTION — the 3 intro pages before the game starts ── */
+/* â”€â”€ 02 Â· INTRODUCTION â”€â”€ */
 #scene-introduction .scene-bg {
-    /* background-color: #fbbf0a; */
     background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/Intro1.jpeg');
     filter: brightness(0.3) saturate(0.5);
 }
@@ -298,13 +142,14 @@ body {
     max-width: 900px;
 }
 
-.introduction-page-num { /* Page number */
+.introduction-page-num {
     font-size: 0.65em;
     letter-spacing: 0.55em;
     color: #e9b357;
     text-transform: uppercase;
     margin-bottom: 2em;
 }
+
 .introduction-page {
     background-color: rgba(95, 95, 95, 0.65);
     padding: 1.25em 1.5em 1.5em;
@@ -339,7 +184,6 @@ body {
     gap: 0.75em;
 }
 
-/* Page 01/03: no Back — forward stays in the right corner */
 .introduction-nav.introduction-nav-first-only {
     justify-content: flex-end;
 }
@@ -392,8 +236,7 @@ body {
 }
 
 @keyframes introduction-next-glow {
-    0%,
-    100% {
+    0%, 100% {
         color: #c8a96e;
         opacity: 0.9;
         text-shadow: 0 0 0 rgba(233, 201, 122, 0);
@@ -405,7 +248,7 @@ body {
     }
 }
 
-/* ── 03 · WHITE ROOM — where the investigator talks and you scan objects ── */
+/* â”€â”€ 03 Â· WHITE ROOM â”€â”€ */
 #scene-investigation .scene-bg {
     background-color: #d8d4ce;
     background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/p1.jpeg');
@@ -442,117 +285,42 @@ body {
     letter-spacing: 0.08em;
 }
 
-.evidence-tracker {
+.conn-status {
     display: flex;
-    gap: 9px;
+    align-items: center;
+    gap: 0.5em;
     padding-top: 0.35em;
 }
 
-.evidence-dot {
-    width: 10px;
-    height: 10px;
+.conn-dot {
+    width: 6px;
+    height: 6px;
     border-radius: 50%;
-    border: 1px solid #2a2018;
-    background: transparent;
-    transition: all 0.6s;
+    background: #2a1a10;
+    transition: all 0.4s;
 }
 
-.evidence-dot.found {
-    background: #c8a96e;
-    border-color: #c8a96e;
-    box-shadow: 0 0 8px rgba(200, 169, 110, 0.5);
+.conn-dot.on {
+    background: #6a9a6a;
+    box-shadow: 0 0 4px #6a9a6a;
+}
+
+.conn-text {
+    font-size: 0.6em;
+    letter-spacing: 0.3em;
+    color: #2a1a10;
+    text-transform: uppercase;
 }
 
 .inv-spacer {
     flex: 1;
 }
 
-/* investigator dialogue panel — sits at the bottom of the white room */
 .inv-dialogue {
     width: 100%;
 }
 
-/* scan waiting state — shows after the investigator finishes talking */
-.scan-wait {
-    padding: 2em 2.4em 2.5em;
-    background: linear-gradient(to top, rgba(0, 0, 0, 0.88), transparent);
-    text-align: center;
-}
-
-.scan-icon-wrap {
-    margin-bottom: 0.5em;
-}
-
-.scan-icon {
-    font-size: 2em;
-    color: #c8a96e;
-    display: inline-block;
-    animation: pulse 2.5s ease-in-out infinite;
-}
-
-.scan-label {
-    font-size: 0.75em;
-    letter-spacing: 0.4em;
-    color: #4a3a28;
-    text-transform: uppercase;
-    margin-bottom: 1.2em;
-}
-
-/* dev mode button — only shows when you don't have the arduino plugged in */
-.dev-trigger {
-    display: inline-block;
-    padding: 0.6em 2em;
-    background: rgba(200, 169, 110, 0.08);
-    border: 1px solid rgba(200, 169, 110, 0.35);
-    color: #c8a96e;
-    font-family: 'Handwrite', 'Georgia', serif;
-    font-size: 0.75em;
-    letter-spacing: 0.3em;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: all 0.3s;
-    margin-bottom: 0.8em;
-}
-
-.dev-trigger:hover {
-    background: rgba(200, 169, 110, 0.14);
-    border-color: #c8a96e;
-}
-
-.nfc-status {
-    font-size: 0.85em;
-    color: #c8a96e;
-    min-height: 1.3em;
-    letter-spacing: 0.05em;
-}
-
-@keyframes pulse {
-
-    0%,
-    100% {
-        opacity: 0.4;
-        transform: scale(1);
-    }
-
-    50% {
-        opacity: 1;
-        transform: scale(1.1);
-    }
-}
-
-/* ── shared dialogue panel — used in both the white room and memory scenes ── */
-.dialogue-panel {
-    position: relative;
-    width: 100%;
-    padding: 2em 4.5em 1.8em;
-    background: rgba(8, 6, 4, 0.74);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
-    border-top: 1px solid rgba(200, 169, 110, 0.1);
-    cursor: pointer;
-}
-
-/* investigator box in the white room only — hand-drawn white note style */
+/* investigator dialogue panel */
 .inv-dialogue .dialogue-panel {
     background: url('asset/textbox.png') center / 100% 100% no-repeat;
     border-top: none;
@@ -563,11 +331,7 @@ body {
     width: calc(100% - 2.4em);
     min-height: 33vh;
     padding: 3.9em 5.2em 2.8em 6em;
-}
-
-.inv-dialogue .dialogue-panel::before,
-.inv-dialogue .dialogue-panel::after {
-    content: none;
+    cursor: pointer;
 }
 
 .inv-dialogue .dialogue-panel .dialogue-speaker {
@@ -580,6 +344,17 @@ body {
 
 .inv-dialogue .dialogue-panel .dialogue-hint {
     color: #6f6253;
+}
+
+.dialogue-panel {
+    position: relative;
+    width: 100%;
+    padding: 2em 4.5em 1.8em;
+    background: rgba(8, 6, 4, 0.74);
+    -webkit-backdrop-filter: blur(16px);
+    backdrop-filter: blur(16px);
+    border-top: 1px solid rgba(200, 169, 110, 0.1);
+    cursor: pointer;
 }
 
 .dialogue-speaker {
@@ -615,173 +390,51 @@ body {
 }
 
 @keyframes blink {
-
-    0%,
-    100% {
-        opacity: 0.25;
-    }
-
-    50% {
-        opacity: 1;
-    }
+    0%, 100% { opacity: 0.25; }
+    50% { opacity: 1; }
 }
 
-/* answer choices — appear after the investigator asks his question */
-.answer-choices {
-    margin-top: 1.4em;
+/* dev panel â€” bottom left, for testing without hardware */
+.dev-panel {
+    position: fixed;
+    bottom: 1.2em;
+    left: 1.2em;
+    z-index: 800;
     display: flex;
     flex-direction: column;
-    gap: 0.5em;
+    gap: 0.4em;
 }
 
-.answer-option {
-    padding: 0.85em 1.2em;
-    background: transparent;
-    border: 1px solid rgba(200, 169, 110, 0.15);
-    color: #9a8a78;
-    font-family: 'Handwrite', 'Georgia', serif;
-    font-size: 0.92em;
-    line-height: 1.5;
-    text-align: left;
-    cursor: pointer;
-    transition: all 0.25s;
-    -webkit-backdrop-filter: blur(4px);
-    backdrop-filter: blur(4px);
+.dev-panel-label {
+    font-size: 0.52em;
+    letter-spacing: 0.4em;
+    color: #2a1a10;
+    text-transform: uppercase;
+    margin-bottom: 0.2em;
 }
 
-.answer-option::before {
-    content: '"';
-    color: #5a4a38;
-    margin-right: 0.4em;
-}
-
-.answer-option::after {
-    content: '"';
-    color: #5a4a38;
-    margin-left: 0.2em;
-}
-
-.answer-option:hover {
-    border-color: rgba(200, 169, 110, 0.5);
-    color: #e8dcc8;
-    background: rgba(200, 169, 110, 0.05);
-}
-
-.answer-option.selected {
-    border-color: #c8a96e;
-    color: #c8a96e;
-    background: rgba(200, 169, 110, 0.08);
-    pointer-events: none;
-}
-
-/* ── 04 · MEMORY SCENES — one per object, built by game.js at startup ── */
-.memory-scene .scene-bg {
-    filter: brightness(0.42) saturate(0.7);
-}
-
-.dialogue-wrapper {
-    position: relative;
-    z-index: 10;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-}
-
-.memory-header {
-    position: absolute;
-    top: 2em;
-    left: 50%;
-    transform: translateX(-50%);
-    text-align: center;
-    pointer-events: none;
-    white-space: nowrap;
-}
-
-.memory-tag {
-    font-size: 0.6em;
-    letter-spacing: 0.7em;
+.dev-panel button {
+    padding: 0.4em 0.9em;
+    background: rgba(10, 8, 6, 0.7);
+    border: 1px solid rgba(200, 169, 110, 0.2);
     color: #4a3a28;
-    text-transform: uppercase;
-}
-
-.memory-title-text {
-    font-size: 1.3em;
-    color: #c8a96e;
-    margin-top: 0.2em;
-    letter-spacing: 0.14em;
-}
-
-.replay-exit-btn {
-    position: absolute;
-    top: 4.2em;
-    right: 1.5em;
-    z-index: 15;
-    padding: 0.45em 0.9em;
-    border: 1px solid rgba(232, 220, 200, 0.45);
-    background: rgba(12, 10, 8, 0.62);
-    color: #f0e6d6;
     font-family: 'Handwrite', 'Georgia', serif;
-    font-size: 0.66em;
-    letter-spacing: 0.16em;
-    text-transform: uppercase;
+    font-size: 0.62em;
+    letter-spacing: 0.15em;
     cursor: pointer;
+    text-align: left;
+    transition: all 0.2s;
 }
 
-.replay-exit-btn:hover {
-    background: rgba(200, 169, 110, 0.18);
-    border-color: rgba(232, 220, 200, 0.75);
+.dev-panel button:hover {
+    border-color: rgba(200, 169, 110, 0.55);
+    color: #c8a96e;
+    background: rgba(200, 169, 110, 0.06);
 }
 
-/* character portrait — fades in from the bottom when the scene starts */
-.character-portrait {
-    position: absolute;
-    bottom: 185px;
-    left: 0;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    pointer-events: none;
-}
+/* â”€â”€ MEMORY OVERLAY â”€â”€ */
 
-.portrait-img {
-    height: 300px;
-    object-fit: contain;
-    filter: drop-shadow(0 0 50px rgba(0, 0, 0, 0.95));
-    opacity: 0;
-    transform: translateY(12px);
-    transition: opacity 0.5s ease, transform 0.5s ease;
-}
-
-.portrait-img.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
-
-.memory-dialogue-panel {
-    margin-top: auto;
-}
-
-/* backgrounds per memory — café for early scenes, home/street for later ones */
-#scene-memory-1 .scene-bg,
-#scene-memory-3 .scene-bg {
-    background-color: #1a1208;
-    background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/Cafe1.jpeg');
-}
-
-#scene-memory-2 .scene-bg,
-#scene-memory-5 .scene-bg {
-    background-color: #14100a;
-    background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/cafe2.jpeg');
-}
-
-#scene-memory-4 .scene-bg,
-#scene-memory-6 .scene-bg {
-    background-color: #0a0e14;
-    background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/p2.jpeg');
-    filter: brightness(0.35) saturate(0.5);
-}
-
-/* ── 05 · CHOICE — the final decision after all 6 objects are scanned ── */
+/* â”€â”€ 04 Â· CHOICE â”€â”€ */
 #scene-choice .scene-bg {
     background-color: #060606;
     background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/p1.jpeg');
@@ -862,7 +515,7 @@ body {
     text-transform: uppercase;
 }
 
-/* ── 06 · ENDINGS — comply (A) and resist (B) ── */
+/* â”€â”€ 05 Â· ENDINGS â”€â”€ */
 #scene-ending-comply .scene-bg {
     background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/p1.jpeg');
     filter: brightness(0.2) saturate(0.18);
@@ -905,7 +558,6 @@ body {
     color: #6a7a8a;
 }
 
-/* each line fades in when it's typed — game.js creates these divs dynamically */
 .ending-lines {
     display: flex;
     flex-direction: column;
@@ -928,21 +580,13 @@ body {
     color: #485868;
 }
 
-/* every 3rd line gets a little extra space — feels like a stanza break */
 .ending-line:nth-child(3n) {
     margin-bottom: 0.6em;
 }
 
 @keyframes lineAppear {
-    from {
-        opacity: 0;
-        transform: translateY(4px);
-    }
-
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .restart-btn {
@@ -957,8 +601,6 @@ body {
     cursor: pointer;
     text-transform: uppercase;
     transition: all 0.4s;
-    opacity: 0;
-    animation: fadeUp 0.8s ease forwards;
 }
 
 .restart-btn:not(.hidden) {
@@ -970,13 +612,120 @@ body {
     color: #c8a96e;
 }
 
-/* ── overlays and connection indicator ── */
-.fade-overlay {
+/* â”€â”€ MEMORY OVERLAY â”€â”€ */
+.memory-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
+    inset: 0;
+    z-index: 500;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.6s ease;
+    cursor: pointer;
+}
+
+.memory-overlay.visible {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.memory-overlay-image {
+    position: absolute;
+    inset: 0;
     width: 100%;
     height: 100%;
+    object-fit: cover;
+    filter: brightness(0.35) sepia(0.7) saturate(0.5) contrast(0.9);
+}
+
+/* warm sepia wash + vignette */
+.memory-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background:
+        radial-gradient(ellipse at center, transparent 25%, rgba(4, 2, 0, 0.78) 100%),
+        linear-gradient(135deg, rgba(60, 38, 10, 0.35) 0%, rgba(20, 14, 4, 0.5) 100%);
+    pointer-events: none;
+}
+
+.memory-overlay-close {
+    position: absolute;
+    top: 1.4em;
+    right: 1.6em;
+    z-index: 20;
+    background: transparent;
+    border: none;
+    color: rgba(232, 220, 200, 0.25);
+    font-family: 'Handwrite', 'Georgia', serif;
+    font-size: 1em;
+    cursor: pointer;
+    transition: color 0.25s;
+    padding: 0.3em 0.5em;
+}
+
+.memory-overlay-close:hover {
+    color: rgba(232, 220, 200, 0.75);
+}
+
+.memory-overlay-content {
+    position: absolute;
+    z-index: 10;
+    left: 14vw;
+    top: 50%;
+    transform: translateY(-50%);
+    max-width: 480px;
+}
+
+.memory-overlay-time {
+    font-size: 0.6em;
+    letter-spacing: 0.7em;
+    color: #3a2e1e;
+    text-transform: uppercase;
+    margin-bottom: 1.4em;
+}
+
+.memory-overlay-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1em;
+    min-height: 8em;
+}
+
+.memory-overlay-line {
+    font-size: 1.05em;
+    color: #6a5a48;
+    line-height: 1.9;
+    letter-spacing: 0.03em;
+    opacity: 0;
+    animation: lineAppear 0.6s ease forwards;
+}
+
+.memory-overlay-line:nth-child(3n) {
+    margin-bottom: 0.6em;
+}
+
+.memory-overlay-hint {
+    display: block;
+    font-size: 0.6em;
+    letter-spacing: 0.5em;
+    color: #2a2018;
+    text-transform: uppercase;
+    margin-top: 2em;
+    opacity: 0;
+    transition: opacity 0.4s;
+    animation: blink 2.2s ease-in-out infinite;
+}
+
+.memory-overlay-hint.show {
+    opacity: 1;
+}
+
+/* â”€â”€ GLOBAL OVERLAYS â”€â”€ */
+.fade-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background: #000;
     opacity: 0;
     pointer-events: none;
@@ -991,10 +740,8 @@ body {
 
 .scan-flash {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     background: rgba(200, 169, 110, 0.1);
     opacity: 0;
     pointer-events: none;
@@ -1004,32 +751,4 @@ body {
 
 .scan-flash.flash {
     opacity: 1;
-}
-
-.conn-status {
-    position: fixed;
-    bottom: 1em;
-    right: 1.3em;
-    z-index: 800;
-    font-size: 0.58em;
-    letter-spacing: 0.3em;
-    color: #221a10;
-    text-transform: uppercase;
-    display: flex;
-    align-items: center;
-    gap: 0.5em;
-    pointer-events: none;
-}
-
-.conn-dot {
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: #221a10;
-    transition: all 0.4s;
-}
-
-.conn-dot.on {
-    background: #6a9a6a;
-    box-shadow: 0 0 4px #6a9a6a;
 }
