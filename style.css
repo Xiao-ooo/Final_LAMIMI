@@ -252,7 +252,7 @@ body {
 #scene-investigation .scene-bg {
     background-color: #d8d4ce;
     background-image: url('asset/investigator.png');
-    filter: brightness(0.55) saturate(0.4);
+    filter: none;
 }
 
 .investigation-ui {
@@ -375,8 +375,6 @@ body {
     width: 100%;
     padding: 2em 4.5em 1.8em;
     background: rgba(8, 6, 4, 0.74);
-    -webkit-backdrop-filter: blur(16px);
-    backdrop-filter: blur(16px);
     border-top: 1px solid rgba(200, 169, 110, 0.1);
     cursor: pointer;
 }
