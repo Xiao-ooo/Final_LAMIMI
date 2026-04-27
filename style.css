@@ -251,7 +251,7 @@ body {
 /* â”€â”€ 03 Â· WHITE ROOM â”€â”€ */
 #scene-investigation .scene-bg {
     background-color: #d8d4ce;
-    background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/p1.jpeg');
+    background-image: url('asset/investigator.png');
     filter: brightness(0.55) saturate(0.4);
 }
 
@@ -461,7 +461,7 @@ body {
 /* â”€â”€ 04 Â· CHOICE â”€â”€ */
 #scene-choice .scene-bg {
     background-color: #060606;
-    background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/p1.jpeg');
+    background-image: url('asset/investigator.png');
     filter: brightness(0.2) saturate(0.25);
 }
 
@@ -541,7 +541,7 @@ body {
 
 /* â”€â”€ 05 Â· ENDINGS â”€â”€ */
 #scene-ending-comply .scene-bg {
-    background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/p1.jpeg');
+    background-image: url('asset/investigator.png');
     filter: brightness(0.2) saturate(0.18);
 }
 
