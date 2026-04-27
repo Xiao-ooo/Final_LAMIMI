@@ -271,6 +271,12 @@ body {
     align-items: flex-start;
 }
 
+.top-bar-right {
+    display: flex;
+    align-items: center;
+    gap: 1.1em;
+}
+
 .location-label {
     font-size: 0.67em;
     letter-spacing: 0.5em;
@@ -290,6 +296,24 @@ body {
     align-items: center;
     gap: 0.5em;
     padding-top: 0.35em;
+}
+
+.case-file-btn {
+    background: rgba(16, 12, 8, 0.7);
+    border: 1px solid rgba(200, 169, 110, 0.35);
+    color: #c8a96e;
+    font-family: 'Handwrite', 'Georgia', serif;
+    font-size: 0.62em;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    padding: 0.52em 1.05em;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.case-file-btn:hover {
+    border-color: rgba(200, 169, 110, 0.7);
+    background: rgba(200, 169, 110, 0.08);
 }
 
 .conn-dot {
@@ -719,6 +743,90 @@ body {
 
 .memory-overlay-hint.show {
     opacity: 1;
+}
+
+.case-file-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 640;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2em;
+}
+
+.case-file-panel {
+    position: relative;
+    width: min(900px, 90vw);
+    height: min(620px, 84vh);
+    overflow: hidden;
+    z-index: 650;
+    background: url('asset/documentary.png') center / cover no-repeat;
+    border: 1px solid rgba(200, 169, 110, 0.3);
+    border-radius: 0.7em;
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.42);
+}
+
+.case-file-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.85em 1em 0.65em;
+    border-bottom: 1px solid rgba(200, 169, 110, 0.18);
+}
+
+.case-file-title {
+    font-size: 0.64em;
+    letter-spacing: 0.35em;
+    color: #c8a96e;
+    text-transform: uppercase;
+}
+
+.case-file-close {
+    background: transparent;
+    border: none;
+    color: rgba(232, 220, 200, 0.6);
+    cursor: pointer;
+    font-size: 0.95em;
+    padding: 0.2em 0.4em;
+}
+
+.case-file-close:hover {
+    color: rgba(232, 220, 200, 0.95);
+}
+
+.case-file-list {
+    position: relative;
+    display: block;
+    padding: 0.8em;
+    height: 100%;
+    overflow: hidden;
+}
+
+.case-file-stage {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.case-file-overlay {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0.2em;
+    object-fit: contain;
+    border: none;
+    pointer-events: none;
+}
+
+.case-file-hitbox {
+    position: absolute;
+    appearance: none;
+    background: transparent;
+    border: none;
+    cursor: pointer;
 }
 
 /* â”€â”€ GLOBAL OVERLAYS â”€â”€ */

@@ -78,9 +78,14 @@
                     <div class="location-label">Location &nbsp;·&nbsp; The White Room</div>
                     <div class="case-name">The Last Witness</div>
                 </div>
-                <div class="conn-status">
-                    <span class="conn-dot" id="connDot"></span>
-                    <span class="conn-text" id="connText">offline</span>
+                <div class="top-bar-right">
+                    <button class="case-file-btn" id="caseFileBtn" onclick="toggleCaseFile()">
+                        Case File
+                    </button>
+                    <div class="conn-status">
+                        <span class="conn-dot" id="connDot"></span>
+                        <span class="conn-text" id="connText">offline</span>
+                    </div>
                 </div>
             </div>
 
@@ -138,6 +143,13 @@
             <div class="ending-title" id="ending-title-resist"></div>
             <div class="ending-lines" id="ending-lines-resist"></div>
             <button class="restart-btn hidden" id="ending-btn-resist" onclick="restartGame()">Begin Again</button>
+        </div>
+    </div>
+
+    <div class="case-file-modal hidden" id="caseFileModal" onclick="closeCaseFile()">
+        <div class="case-file-panel" id="caseFilePanel" onclick="event.stopPropagation()">
+            <div class="case-file-list" id="caseFileList">
+            </div>
         </div>
     </div>
 

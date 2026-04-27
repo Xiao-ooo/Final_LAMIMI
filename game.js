@@ -157,6 +157,8 @@ const STORY = {
         memoryTitle: "After Work",
         memoryTime: "Weeks Before · Evening",
         image: "asset/metro.png",
+        caseImage: "asset/metro.png",
+        caseHotspot: { left: 0, top: 0, width: 100, height: 100 },
         lines: [
           {
             speaker: "PROTAGONIST",
@@ -196,6 +198,8 @@ const STORY = {
         memoryTitle: "The Regular Order",
         memoryTime: "That Morning",
         image: "asset/badge.png",
+        caseImage: "asset/pin.png",
+        caseHotspot: { left: 54.53, top: 64.76, width: 12.8, height: 22.07 },
         lines: [
           {
             speaker: "PROTAGONIST",
@@ -235,6 +239,8 @@ const STORY = {
         memoryTitle: "The Stranger",
         memoryTime: "That Afternoon · 15:00",
         image: "asset/cup.png",
+        caseImage: "asset/cup copy.png",
+        caseHotspot: { left: 35.85, top: 25.18, width: 12.37, height: 21.89 },
         lines: [
           {
             speaker: "PROTAGONIST",
@@ -274,6 +280,8 @@ const STORY = {
         memoryTitle: "Ten Seconds",
         memoryTime: "That Afternoon · 15:30",
         image: "asset/rent.png",
+        caseImage: "asset/rent copy.png",
+        caseHotspot: { left: 33.86, top: 53.11, width: 13.18, height: 21.83 },
         lines: [
           {
             speaker: "PROTAGONIST",
@@ -317,6 +325,8 @@ const STORY = {
         memoryTitle: "The Open Drain",
         memoryTime: "That Afternoon · 16:05",
         image: "asset/airpod.png",
+        caseImage: "asset/airpods.png",
+        caseHotspot: { left: 55.97, top: 38.84, width: 15.22, height: 18.96 },
         lines: [
           {
             speaker: "PROTAGONIST",
@@ -429,6 +439,9 @@ let memOverlayLineIndex = 0;
 let memOverlayMemory = null;
 let memOverlayTypingDone = false;
 let memOverlayTimer = null;
+let memOverlayUid = null;
+let memOverlayCompleted = false;
+const discoveredObjects = new Set();
 
 // endings
 let endingLineIndex = 0;
@@ -441,6 +454,7 @@ let endingTimer = null;
 function init() {
   buildMemoryOverlay();
   renderIntroductionPage();
+  renderCaseFile();
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -673,6 +687,8 @@ function showMemoryOverlay(uid) {
   if (!mem) return;
 
   memoryOverlayActive = true;
+  memOverlayUid = uid;
+  memOverlayCompleted = false;
   memOverlayMemory = mem;
   memOverlayLineIndex = 0;
 
@@ -733,13 +749,21 @@ function advanceMemoryOverlay() {
   if (memOverlayLineIndex < memOverlayMemory.lines.length) {
     showMemoryOverlayLine();
   } else {
+    memOverlayCompleted = true;
     closeMemoryOverlay();
   }
 }
 
 function closeMemoryOverlay() {
+  if (memOverlayCompleted && memOverlayUid && STORY.memories[memOverlayUid]) {
+    discoveredObjects.add(memOverlayUid);
+    renderCaseFile();
+  }
+
   memoryOverlayActive = false;
   memOverlayMemory = null;
+  memOverlayUid = null;
+  memOverlayCompleted = false;
   clearTimeout(memOverlayTimer);
 
   const overlay = document.getElementById('memoryOverlay');
@@ -747,6 +771,64 @@ function closeMemoryOverlay() {
   setTimeout(() => {
     overlay.classList.add('hidden');
   }, 400);
+}
+
+function toggleCaseFile() {
+  const modal = document.getElementById('caseFileModal');
+  if (!modal) return;
+  const isHidden = modal.classList.contains('hidden');
+  if (isHidden) {
+    renderCaseFile();
+    modal.classList.remove('hidden');
+  } else {
+    modal.classList.add('hidden');
+  }
+}
+
+function closeCaseFile() {
+  const modal = document.getElementById('caseFileModal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function renderCaseFile() {
+  const list = document.getElementById('caseFileList');
+  if (!list) return;
+  list.innerHTML = '';
+
+  if (discoveredObjects.size === 0) return;
+
+  const stage = document.createElement('div');
+  stage.className = 'case-file-stage';
+  list.appendChild(stage);
+
+  Array.from(discoveredObjects).forEach(uid => {
+    const mem = STORY.memories[uid];
+    if (!mem) return;
+
+    const img = document.createElement('img');
+    img.className = 'case-file-overlay';
+    img.src = mem.caseImage || mem.image || '';
+    img.alt = mem.objectName || 'Object image';
+    img.onerror = () => {
+      img.style.display = 'none';
+    };
+
+    const hitbox = document.createElement('button');
+    hitbox.type = 'button';
+    hitbox.className = 'case-file-hitbox';
+    const box = mem.caseHotspot || { left: 0, top: 0, width: 100, height: 100 };
+    hitbox.style.left = `${box.left}%`;
+    hitbox.style.top = `${box.top}%`;
+    hitbox.style.width = `${box.width}%`;
+    hitbox.style.height = `${box.height}%`;
+    hitbox.onclick = () => {
+      closeCaseFile();
+      showMemoryOverlay(uid);
+    };
+
+    stage.appendChild(img);
+    stage.appendChild(hitbox);
+  });
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -821,6 +903,9 @@ function restartGame() {
   invPhase = 'idle';
   invQueueActive = false;
   memoryOverlayActive = false;
+  discoveredObjects.clear();
+  closeCaseFile();
+  renderCaseFile();
   closeMemoryOverlay();
   transitionTo('intro');
 }
