@@ -8,7 +8,6 @@ const STORY = {
         title: "You are in a white room.",
         body:
           `A man sits across from you. Unhurried. Professional.
-  
   He says he's been hired to understand what happened three weeks ago
   on LaMimi Street. He heard you were there that afternoon.
   He thinks you can help.`
@@ -45,7 +44,7 @@ const STORY = {
         speaker: "INVESTIGATOR",
         text: "Nothing formal about this. I just need your help filling in a few details."
       },
-      {
+      { //maybe we can have a note popup versus having the detective saying this.
         speaker: "INVESTIGATOR",
         text: "There are some objects on the table — things connected to that week."
       },
@@ -55,95 +54,283 @@ const STORY = {
       },
     ],
 
-    // main investigation dialogue — plays through linearly
+    /* main investigation: linear lines ({ speaker, text }) and choice beats
+       ({ type: 'choice', question?: [...], options: [{ label?, text }] }) */
     investigation: [
-      // Act 1
+      // [Q1] Safe opening
       {
         speaker: "INVESTIGATOR",
-        text: "Let's start with the café on Zhongshan Road. You were a regular there."
-      },
-      {
-        speaker: "INVESTIGATOR",
-        text: "The barista — how well did you know him?"
+        text: "You were at that café for a while that day, right? Do you usually go there?"
       },
       {
         speaker: "PROTAGONIST",
-        text: "Well enough to have a usual order. We talked sometimes. Nothing serious."
+        text: "Yeah? I go there pretty often."
       },
       {
         speaker: "INVESTIGATOR",
-        text: "Did he ever mention his tenants? The building he owned on Wentao Street?"
+        text: "So it was just a normal day for you. You were sitting in your usual spot?"
       },
       {
         speaker: "PROTAGONIST",
-        text: "Once or twice. He had someone who wasn't paying. It frustrated him."
+        text: "Yea?"
       },
-      {
-        speaker: "INVESTIGATOR",
-        text: "Frustrated. That's one word for it."
-      },
-      // Act 2
-      {
-        speaker: "INVESTIGATOR",
-        text: "On the afternoon of the fourteenth — you were at the café for several hours."
-      },
-      {
-        speaker: "INVESTIGATOR",
-        text: "Someone sat next to you. A stranger."
-      },
-      {
-        speaker: "PROTAGONIST",
-        text: "Yes. He was friendly. Easy to talk to."
-      },
-      {
-        speaker: "INVESTIGATOR",
-        text: "Did he say anything about where he was going afterwards?"
-      },
-      {
-        speaker: "PROTAGONIST",
-        text: "No. He just said he had things to sort out."
-      },
-      {
-        speaker: "INVESTIGATOR",
-        text: "Things to sort out."
-      },
-      // Act 3
-      {
-        speaker: "INVESTIGATOR",
-        text: "You left around four. But something happened before you got home."
-      },
-      {
-        speaker: "INVESTIGATOR",
-        text: "Near the construction site on Wentao Street."
-      },
-      {
-        speaker: "PROTAGONIST",
-        text: "I — yes. I saw something."
-      },
-      {
-        speaker: "INVESTIGATOR",
-        text: "Take your time."
-      },
-      {
-        speaker: "PROTAGONIST",
-        text: "There were two people. Near the open manhole. It happened very fast."
-      },
-      {
-        speaker: "INVESTIGATOR",
-        text: "Did you recognise either of them?"
-      },
-    ],
 
-    // final question before ending choice
-    finalQuestion: [
+      // [Q2] cafe owner's state
+      {
+        type: "choice",
+        question: [
+          {
+            speaker: "INVESTIGATOR",
+            text:
+              "The cafe owner… did he seem a bit distracted that day? Or did you notice what he was busy with?"
+          }
+        ],
+        options: [
+          {
+            label: "A",
+            text: "He was making coffee and chatted with me like usual."
+          },
+          {
+            label: "B",
+            text: "He seemed in a bad mood, like he was dealing with something."
+          }
+        ]
+      },
+
+      // [Q3] Victim's emotional state
+      {
+        type: "choice",
+        question: [
+          {
+            speaker: "INVESTIGATOR",
+            text:
+              "Later, a man came in and sat next to you. You talked for a bit, right? What was his overall state like, in your opinion?"
+          }
+        ],
+        options: [
+          {
+            label: "A",
+            text:
+              "He seemed okay? just casual chatting… maybe a little tired."
+          },
+          {
+            label: "B",
+            text:
+              "The conversation felt natural, but he mentioned he had a lot going on lately."
+          }
+        ]
+      },
+
+      // [Q4] What the victim mentioned
+      {
+        type: "choice",
+        question: [
+          {
+            speaker: "INVESTIGATOR",
+            text:
+              "During your conversation, did he mention where he was going, or if he was waiting for someone?"
+          }
+        ],
+        options: [
+          {
+            label: "A",
+            text:
+              "Was he waiting for someone? I don't really remember."
+          },
+          {
+            label: "B",
+            text:
+              "Actually, yeah... he said he was going out for something, like he had something to do."
+          }
+        ]
+      },
+
+      // [Q5] cafe owner contacts victim
+      {
+        type: "choice",
+        question: [
+          {
+            speaker: "INVESTIGATOR",
+            text: "Hmmm...I see."
+          },
+          {
+            speaker: "INVESTIGATOR",
+            text:
+              "Before the cafe owner left the café, did you see him interact with that man at all?"
+          }
+        ],
+        options: [
+          {
+            label: "A",
+            text:
+              "Yes, he put a piece of paper on his table."
+          },
+          {
+            label: "B",
+            text:
+              "There was a piece of paper, but I didn't notice what he did exactly."
+          }
+        ]
+      },
+
+      // Inner reaction — player selects a feeling
+      {
+        type: "choice",
+        question: [],
+        options: [
+          {
+            text:
+              "This is weird… why do you keep asking about these two? Did something happen between them?"
+          },
+          {
+            text:
+              "I'm not feeling well… let's not talk about this."
+          }
+        ]
+      },
+
+      // [Q6.5] Prior presence
+      {
+        type: "choice",
+        question: [
+          {
+            speaker: "INVESTIGATOR",
+            text: "Alright, let's change the subject."
+          },
+          {
+            speaker: "INVESTIGATOR",
+            text:
+              "Before this incident, did you ever see the cafe owner near that construction area, not in the café, but outside?"
+          }
+        ],
+        options: [
+          {
+            label: "A",
+            text:
+              "Yeah, he was standing by the barrier, walking back and forth."
+          },
+          {
+            label: "B",
+            text:
+              "Yeah, he was there smoking. Honestly, kind of surprising for someone who makes drinks…"
+          }
+        ]
+      },
+
+      // [Q7] Emotional reinforcement
+      {
+        type: "choice",
+        question: [
+          {
+            speaker: "INVESTIGATOR",
+            text:
+              "At the time, did it feel like the conversation between them wasn't very relaxed?" 
+          }
+        ],
+        options: [
+          {
+            label: "A",
+            text:
+              "Yeah,there was some tension. They looked like they were arguing."
+          },
+          {
+            label: "B",
+            text:
+              "I couldn't hear what they said, but it looked tense."
+          }
+        ]
+      },
+
+      // [Q8] Physical setup
+      {
+        type: "choice",
+        question: [
+          {
+            speaker: "INVESTIGATOR",
+            text:
+              "When the man and the cafe owner went over near the manhole… did you see the moment he fell?"
+          }
+        ],
+        options: [
+          {
+            label: "A",
+            text: "Yes… I saw him fall."
+          },
+          {
+            label: "B",
+            text: "I heard a 'thump' like something dropped. I didn't get a clear look."
+          }
+        ]
+      },
+
+      // [Q9] Narrative closure
+      {
+        type: "choice",
+        question: [
+          {
+            speaker: "INVESTIGATOR",
+            text: "I understand."
+          },
+          {
+            speaker: "INVESTIGATOR", //use audio
+            text: "(Pauses, as if organizing notes.)"
+          },
+          {
+            speaker: "INVESTIGATOR",
+            text:
+              "So the situation was, the cafe owner was already in a bad mood while inside the café, then he and the man went outside for a talk." //However, it seemed like they didn't have a friendly conversation.
+          },
+          {
+            speaker: "INVESTIGATOR",
+            text:
+              "The atmosphere became tense. They were standing very close to each other, and then the man fell."
+          },
+          {
+            speaker: "INVESTIGATOR",
+            text: "Does that sequence sound roughly accurate to you?"
+          }
+        ],
+        options: [
+          {
+            label: "A",
+            text: "Yes, that sounds about right."
+          },
+          {
+            label: "B",
+            text: "Umm… I'm not sure."
+          }
+        ]
+      },
+
+      // [Ending] — still in the white room
       {
         speaker: "INVESTIGATOR",
-        text: "I'm going to ask you directly."
+        text: "I see."
       },
       {
         speaker: "INVESTIGATOR",
-        text: "The person who fell — did you know who they were?"
+        text: "(Puts away the recorder, stands up.)"
       },
+      {
+        speaker: "INVESTIGATOR",
+        text: "Thank you. You've been a big help."
+      },
+      {
+        speaker: "INVESTIGATOR",
+        text: "(Walks to the door, then turns back.)"
+      },
+      {
+        speaker: "INVESTIGATOR",
+        text: "when you ran over… you were trying to help, right?"
+      },
+      {
+        speaker: "INVESTIGATOR",
+        text: "(Pause.)"
+      },
+      {
+        speaker: "INVESTIGATOR",
+        text: "You did everything you could."
+      }
     ],
 
     // object memory data — triggered by NFC scans, non-linear
@@ -174,7 +361,7 @@ const STORY = {
           },
           {
             speaker: "PROTAGONIST",
-            text: "The barista. Standing by the barrier. Half a cigarette between his fingers."
+            text: "The cafe owner. Standing by the barrier. Half a cigarette between his fingers."
           },
           {
             speaker: "PROTAGONIST",
@@ -289,7 +476,7 @@ const STORY = {
           },
           {
             speaker: "PROTAGONIST",
-            text: "The barista came out from behind the counter."
+            text: "The cafe owner came out from behind the counter."
           },
           {
             speaker: "PROTAGONIST",
@@ -305,7 +492,7 @@ const STORY = {
           },
           {
             speaker: "PROTAGONIST",
-            text: "The barista stood there for two seconds. Then turned and walked back."
+            text: "The cafe owner stood there for two seconds. Then turned and walked back."
           },
           {
             speaker: "PROTAGONIST",
@@ -354,11 +541,11 @@ const STORY = {
           },
           {
             speaker: "PROTAGONIST",
-            text: "The barista. And the man from the table."
+            text: "The cafe owner. And the man from the table."
           },
           {
             speaker: "PROTAGONIST",
-            text: "The barista was holding the paper. They were arguing. Loud."
+            text: "The cafe owner was holding the paper. They were arguing. Loud."
           },
           {
             speaker: "PROTAGONIST",
@@ -384,16 +571,12 @@ const STORY = {
     endings: {
       comply: {
         label: "Ending A",
-        title: "The Testimony",
+        title: "After the White Room",
         lines: [
-          "The investigator thanks you.",
-          "He leaves without looking back.",
-          "You said only what was true.",
-          "Every word of it was a real memory.",
-          "The barista is arrested the following week.",
-          "The construction site files are never reviewed.",
-          "You did not lie.",
-          "That is the part you will keep returning to.",
+          "The door closes.",
+          "Footsteps fade down the corridor.",
+          "You stay seated long enough for the silence to settle.",
+          "Whatever was recorded — it is out of your hands now.",
         ]
       },
       resist: {
@@ -406,7 +589,7 @@ const STORY = {
           "You remember two figures.",
           "You remember something falling.",
           "That is all you were able to honestly say.",
-          "Somewhere, the barista goes home.",
+          "Somewhere, the cafe owner goes home.",
           "You will never know what comes after.",
         ]
       }
@@ -425,7 +608,7 @@ let typingDone = false;
 let introductionIndex = 0;
 
 // investigation (main linear dialogue)
-let invPhase = 'idle';       // 'dialogue' | 'idle' | 'final'
+let invPhase = 'idle';       // 'dialogue' | 'waiting' | 'choicePick' | 'idle'
 let invQueue = [];
 let invQueueIndex = 0;
 let invQueueActive = false;
@@ -579,33 +762,88 @@ function startInvestigation() {
 // groups lines into "beats" — runs until a PROTAGONIST line, then pauses for click
 function continueInvestigation() {
   if (invLineIndex >= STORY.investigation.length) {
-    // main dialogue done — go to final question
-    runInvDialogue(STORY.finalQuestion, () => {
-      transitionTo('choice');
-    });
+    transitionTo('ending-comply', () => playEnding('comply'));
     return;
   }
 
-  // collect lines up to and including the next stopping point
-  // stop after each PROTAGONIST line (player's response) or at end of a beat
+  const next = STORY.investigation[invLineIndex];
+  if (next && next.type === 'choice') {
+    showInvestigationChoice(next);
+    return;
+  }
+
   const lines = [];
   let i = invLineIndex;
 
   while (i < STORY.investigation.length) {
-    lines.push(STORY.investigation[i]);
+    const row = STORY.investigation[i];
+    if (row.type === 'choice') break;
+    lines.push(row);
     i++;
-    // stop after protagonist speaks, or after 3 consecutive investigator lines
     const last = lines[lines.length - 1];
     if (last.speaker === 'PROTAGONIST') break;
-    if (lines.length >= 3 && lines[lines.length - 1].speaker === 'INVESTIGATOR') break;
+    if (lines.length >= 3 && last.speaker === 'INVESTIGATOR') break;
   }
 
   invLineIndex = i;
 
   runInvDialogue(lines, () => {
-    // after each beat, wait for player to click to continue
     showInvContinueHint();
   });
+}
+
+function showInvestigationChoice(item) {
+  hideInvestigationChoice();
+  const q = item.question || [];
+  if (q.length === 0) {
+    renderInvestigationChoiceButtons(item);
+    return;
+  }
+  runInvDialogue(q, () => renderInvestigationChoiceButtons(item));
+}
+
+function renderInvestigationChoiceButtons(item) {
+  const wrap = document.getElementById('invChoiceWrap');
+  if (!wrap) return;
+  wrap.innerHTML = '';
+  if (item.choicePrompt) {
+    const p = document.createElement('div');
+    p.className = 'inv-choice-prompt';
+    p.textContent = item.choicePrompt;
+    wrap.appendChild(p);
+  }
+  item.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'inv-choice-btn';
+    const body = opt.text;
+    btn.textContent = opt.label ? `${opt.label}: ${body}` : body;
+    btn.onclick = e => {
+      e.stopPropagation();
+      resolveInvestigationChoice(opt);
+    };
+    wrap.appendChild(btn);
+  });
+  wrap.classList.remove('hidden');
+  invPhase = 'choicePick';
+  document.getElementById('invHint').classList.remove('show');
+}
+
+function hideInvestigationChoice() {
+  const wrap = document.getElementById('invChoiceWrap');
+  if (wrap) {
+    wrap.classList.add('hidden');
+    wrap.innerHTML = '';
+  }
+}
+
+function resolveInvestigationChoice(opt) {
+  hideInvestigationChoice();
+  invLineIndex++;
+  runInvDialogue(
+    [{ speaker: 'PROTAGONIST', text: opt.text }],
+    () => showInvContinueHint()
+  );
 }
 
 function showInvContinueHint() {
@@ -644,11 +882,12 @@ function showInvLine() {
 
 function advanceInvDialogue() {
   if (invPhase === 'waiting') {
-    // player clicked after a beat — continue to next beat
     invPhase = 'idle';
     continueInvestigation();
     return;
   }
+
+  if (invPhase === 'choicePick') return;
 
   if (!invQueueActive) return;
 
@@ -902,6 +1141,7 @@ function restartGame() {
   invLineIndex = 0;
   invPhase = 'idle';
   invQueueActive = false;
+  hideInvestigationChoice();
   memoryOverlayActive = false;
   discoveredObjects.clear();
   closeCaseFile();
