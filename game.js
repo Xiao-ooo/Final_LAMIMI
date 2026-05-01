@@ -343,7 +343,7 @@ const STORY = {
         icon: "🚇",
         memoryTitle: "After Work",
         memoryTime: "Weeks Before · Evening",
-        image: "asset/metro card.png",
+        image: "asset/metro.png",
         caseImage: "asset/metro card.png",
         caseHotspot: { left: 0, top: 0, width: 100, height: 100 },
         lines: [
