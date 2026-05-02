@@ -599,7 +599,65 @@ const STORY = {
 // ─────────────────────────────────────────────────────────────
 // GAME STATE
 // ─────────────────────────────────────────────────────────────
+// ─────────────────────────────────────────────────────────────
+// AUDIO ASSETS - 新增背景音乐定义
+// ─────────────────────────────────────────────────────────────
+const bgm = new Audio('asset/audio/investigation/empty room.mp3');
+bgm.loop = true; 
+bgm.volume = 0.3; 
 
+const memorySfx = new Audio('asset/audio/investigation/回忆转场.mp3');
+memorySfx.volume = 0.5;
+
+const clickSfx = new Audio('asset/audio/investigation/点击.mp3');
+clickSfx.volume = 0.3;
+
+// --- 地铁卡记忆专用音频 ---
+const metroCityBgm = new Audio('asset/audio/metro card/城市路边.mp3');
+metroCityBgm.loop  = true;
+metroCityBgm.volume = 0.4;
+
+const metroConstructionSfx = new Audio('asset/audio/metro card/道路施工.mp3');
+metroConstructionSfx.loop = true; 
+metroConstructionSfx.volume = 0.4;
+
+// --- Barista Pin 记忆专用音频 ---
+const baristaBgm = new Audio('asset/audio/barista pin/咖啡厅环境.mp3');
+baristaBgm.loop = true;
+baristaBgm.volume = 0.4;
+
+const baristaChatter = new Audio('asset/audio/barista pin/讨论声.mp3');
+baristaChatter.loop = true;
+baristaChatter.volume = 0.5;
+
+const baristaMachine = new Audio('asset/audio/barista pin/咖啡机.wav');
+baristaMachine.loop = true;
+baristaMachine.volume = 0.4;
+
+const baristaFrustrated = new Audio('asset/audio/barista pin/frustrated.wav');
+baristaFrustrated.volume = 0.7; // 单次播放
+
+const baristaCupSlide = new Audio('asset/audio/barista pin/移动杯子.mp3');
+baristaCupSlide.volume = 0.6;
+
+function updateBGM() {
+  if (memoryOverlayActive) {
+    bgm.pause();
+    return;
+  }
+
+  const isGameScene = (currentScene === 'investigation' || currentScene.startsWith('ending'));
+  
+  if (isGameScene) {
+    if (bgm.paused) {
+      bgm.play().catch(e => {
+        console.log("主 BGM 播放等待交互...");
+      });
+    }
+  } else {
+    bgm.pause();
+  }
+}
 let currentScene = 'intro';
 let isTransitioning = false;
 let twTimer = null;
@@ -638,8 +696,18 @@ function init() {
   buildMemoryOverlay();
   renderIntroductionPage();
   renderCaseFile();
-}
 
+  document.addEventListener('mousedown', (event) => {
+    if (event.target.closest('button')) {
+      clickSfx.currentTime = 0; 
+      clickSfx.play().catch(e => {});
+    }
+  });
+
+  document.addEventListener('click', () => {
+    updateBGM();
+  }, { once: true });
+}
 // ─────────────────────────────────────────────────────────────
 // SCENE TRANSITIONS
 // ─────────────────────────────────────────────────────────────
@@ -655,6 +723,9 @@ function transitionTo(sceneId, onArrival) {
     const next = document.getElementById(`scene-${sceneId}`);
     if (next) next.classList.add('active');
     currentScene = sceneId;
+
+    updateBGM();
+
     overlay.classList.remove('active');
     setTimeout(() => {
       isTransitioning = false;
@@ -912,20 +983,42 @@ function advanceInvDialogue() {
   }
 }
 
-// ─────────────────────────────────────────────────────────────
-// MEMORY OVERLAY — triggered by NFC, non-linear, repeatable
-// ─────────────────────────────────────────────────────────────
-
 function buildMemoryOverlay() {
-  // the overlay is already in index.html — we just populate it dynamically
-  // nothing to build here; showMemoryOverlay() handles rendering
+
 }
 
 function showMemoryOverlay(uid) {
   const mem = STORY.memories[uid];
   if (!mem) return;
 
+  const allMemorySounds = [
+    metroCityBgm, metroConstructionSfx,
+    baristaBgm, baristaChatter, baristaMachine, baristaFrustrated, baristaCupSlide,
+    memorySfx
+  ];
+  
+  allMemorySounds.forEach(s => {
+    s.pause();
+    s.currentTime = 0;
+  });
+
+  memorySfx.play().catch(e => console.log("音效播放被拦截"));
+
   memoryOverlayActive = true;
+  updateBGM(); 
+
+  // 4. 根据当前 UID 开启对应的记忆背景音
+  // Object 1: Metro Card
+  if (uid === "53C19186520001") { 
+    metroCityBgm.play().catch(e => console.error("地铁背景音播放失败"));
+  }
+  
+  // Object 2: Barista Pin (修正了这里的 UID 字符串)
+  if (uid === "53AC8C86520001") { 
+    baristaBgm.play().catch(e => console.error("咖啡厅背景音播放失败"));
+  }
+
+  // 5. 渲染逻辑
   memOverlayUid = uid;
   memOverlayCompleted = false;
   memOverlayMemory = mem;
@@ -939,13 +1032,14 @@ function showMemoryOverlay(uid) {
 
   time.textContent = mem.memoryTime;
   hint.classList.remove('show');
-  linesEl.innerHTML = ''; // clear previous lines
+  linesEl.innerHTML = ''; 
 
-  // image
+  // 图像处理
   img.src = mem.image || '';
   img.style.display = mem.image ? 'block' : 'none';
   img.onerror = () => { img.style.display = 'none'; };
 
+  // 显示 Overlay 动画
   overlay.classList.remove('hidden');
   requestAnimationFrame(() => {
     requestAnimationFrame(() => {
@@ -953,12 +1047,46 @@ function showMemoryOverlay(uid) {
     });
   });
 
+  // 6. 开启打字机效果并触发文本关联音效
   showMemoryOverlayLine();
 }
 
 function showMemoryOverlayLine() {
   const mem = memOverlayMemory;
   const line = mem.lines[memOverlayLineIndex];
+  const text = line.text;
+
+  // --- Barista Pin 音频触发逻辑 ---
+  if (memOverlayUid === "53359D86520001") {
+    
+    // 1. 讨论声与咖啡机 (特定时间开始)
+    if (text.includes("He was holding a cup")) {
+      baristaChatter.currentTime = 45; // 从45秒开始
+      baristaChatter.play().catch(e => {});
+      
+      baristaMachine.currentTime = 10; // 从10秒开始
+      baristaMachine.play().catch(e => {});
+    }
+
+    // 2. 挫败感声音 (单次)
+    if (text.includes("So frustrating")) {
+      baristaFrustrated.currentTime = 0;
+      baristaFrustrated.play().catch(e => {});
+    }
+
+    // 3. 移动杯子 (只播前三秒)
+    if (text.includes("He pushed the cup")) {
+      baristaCupSlide.currentTime = 0;
+      baristaCupSlide.play().catch(e => {});
+      // 3秒后停止
+      setTimeout(() => {
+        baristaCupSlide.pause();
+        baristaCupSlide.currentTime = 0;
+      }, 3000);
+    }
+  }
+
+  memOverlayTypingDone = true;
 
   const hint = document.getElementById('memoryOverlayHint');
   const linesEl = document.getElementById('memoryOverlayLines');
@@ -1004,12 +1132,30 @@ function closeMemoryOverlay() {
   memOverlayUid = null;
   memOverlayCompleted = false;
   clearTimeout(memOverlayTimer);
+  const baristaSounds = [
+    baristaBgm, baristaChatter, baristaMachine, 
+    baristaFrustrated, baristaCupSlide
+  ];
+  
+  baristaSounds.forEach(s => {
+    s.pause();
+    s.currentTime = 0;
+  });
 
+
+  metroCityBgm.pause();
+  metroCityBgm.currentTime = 0;
+  metroConstructionSfx.pause();
+  metroConstructionSfx.currentTime = 0;
+  
   const overlay = document.getElementById('memoryOverlay');
   overlay.classList.remove('visible');
   setTimeout(() => {
     overlay.classList.add('hidden');
-  }, 400);
+if (typeof updateBGM === 'function') {
+      updateBGM();
+    }
+    }, 400);
 }
 
 function toggleCaseFile() {
@@ -1155,6 +1301,9 @@ function restartGame() {
 // ─────────────────────────────────────────────────────────────
 
 document.addEventListener('keydown', e => {
+  if (e.code === 'Space' || e.code === 'Enter') {
+
+  }
   if (e.key === 'Escape') {
     if (memoryOverlayActive) closeMemoryOverlay();
     return;
