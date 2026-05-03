@@ -603,11 +603,15 @@ const STORY = {
 // AUDIO ASSETS - 新增背景音乐定义
 // ─────────────────────────────────────────────────────────────
 const bgm = new Audio('asset/audio/investigation/empty room.mp3');
-bgm.loop = true; 
-bgm.volume = 0.3; 
+bgm.loop = true;
+bgm.volume = 0.3;
+
+const ambientBgm = new Audio('asset/audio/背景音.mp3');
+ambientBgm.loop = true;
+ambientBgm.volume = 0.2;
 
 const memorySfx = new Audio('asset/audio/investigation/回忆转场.mp3');
-memorySfx.volume = 0.5;
+memorySfx.volume = 0.3;
 
 const clickSfx = new Audio('asset/audio/investigation/点击.mp3');
 clickSfx.volume = 0.3;
@@ -638,24 +642,95 @@ const baristaFrustrated = new Audio('asset/audio/barista pin/frustrated.wav');
 baristaFrustrated.volume = 0.7; // 单次播放
 
 const baristaCupSlide = new Audio('asset/audio/barista pin/移动杯子.mp3');
-baristaCupSlide.volume = 0.6;
+baristaCupSlide.volume = 1;
+
+// --- Coffee Cup 记忆专用音频 ---
+const cupChairSfx = new Audio('asset/audio/coffee cup/挪椅子.wav');
+cupChairSfx.volume = 0.6;
+
+const cupBagSfx = new Audio('asset/audio/coffee cup/放包.wav');
+cupBagSfx.volume = 0.6;
+
+// --- Rent Paper 记忆专用音频 ---
+const rentPaperSfx = new Audio('asset/audio/rent paper/rent paper.mp3');
+rentPaperSfx.volume = 0.6;
+
+const rentSlideSfx = new Audio('asset/audio/rent paper/纸张滑动.mp3');
+rentSlideSfx.volume = 0.6;
+
+const rentFootstepSfx = new Audio('asset/audio/rent paper/脚步.mp3');
+rentFootstepSfx.volume = 0.6;
+
+// --- AirPod 记忆专用音频 ---
+const airpodDoorSfx = new Audio('asset/audio/airpods/开门声.mp3');
+airpodDoorSfx.volume = 0.8;
+
+const airpodPaySfx = new Audio('asset/audio/airpods/付款.wav');
+airpodPaySfx.volume = 0.6;
+
+const airpodCrowdBgm = new Audio('asset/audio/airpods/嘈杂声.mp3');
+airpodCrowdBgm.loop = true;
+airpodCrowdBgm.volume = 0.3;
+
+const airpodVoiceSfx = new Audio('asset/audio/airpods/远处人声.mp3');
+airpodVoiceSfx.volume = 0.8;
+
+const airpodRunSfx = new Audio('asset/audio/airpods/跑.mp3');
+airpodRunSfx.volume = 0.8;
+
+const airpodBreathSfx = new Audio('asset/audio/airpods/沉重呼吸.mp3');
+airpodBreathSfx.volume = 1;
+
+const airpodThumpSfx = new Audio('asset/audio/airpods/body fall thump.mp3');
+airpodThumpSfx.volume = 0.5;
+
+function fadeAudioIn(audio, targetVolume, duration) {
+  audio.volume = 0;
+  const steps = 40;
+  const interval = duration / steps;
+  const step = targetVolume / steps;
+  let count = 0;
+  const timer = setInterval(() => {
+    count++;
+    audio.volume = Math.min(targetVolume, step * count);
+    if (count >= steps) clearInterval(timer);
+  }, interval);
+}
+
+function fadeAudioOut(audio, duration, onDone) {
+  const startVolume = audio.volume;
+  const steps = 40;
+  const interval = duration / steps;
+  const step = startVolume / steps;
+  let count = 0;
+  const timer = setInterval(() => {
+    count++;
+    audio.volume = Math.max(0, startVolume - step * count);
+    if (count >= steps) {
+      clearInterval(timer);
+      audio.pause();
+      audio.currentTime = 0;
+      if (onDone) onDone();
+    }
+  }, interval);
+}
 
 function updateBGM() {
   if (memoryOverlayActive) {
     bgm.pause();
+    ambientBgm.pause();
     return;
   }
 
-  const isGameScene = (currentScene === 'investigation' || currentScene.startsWith('ending'));
-  
-  if (isGameScene) {
-    if (bgm.paused) {
-      bgm.play().catch(e => {
-        console.log("主 BGM 播放等待交互...");
-      });
-    }
+  if (currentScene === 'investigation') {
+    if (bgm.paused) bgm.play().catch(e => {});
+    ambientBgm.pause();
+  } else if (currentScene === 'intro' || currentScene === 'introduction') {
+    bgm.pause();
+    if (ambientBgm.paused) ambientBgm.play().catch(e => {});
   } else {
     bgm.pause();
+    ambientBgm.pause();
   }
 }
 let currentScene = 'intro';
@@ -718,15 +793,17 @@ function transitionTo(sceneId, onArrival) {
   const overlay = document.getElementById('fadeOverlay');
   overlay.classList.add('active');
   setTimeout(() => {
-    document.querySelectorAll('.scene.active')
-      .forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.scene.active').forEach(s => {
+      s.style.transition = 'none';
+      s.classList.remove('active');
+    });
     const next = document.getElementById(`scene-${sceneId}`);
     if (next) next.classList.add('active');
     currentScene = sceneId;
 
     updateBGM();
 
-    overlay.classList.remove('active');
+    setTimeout(() => overlay.classList.remove('active'), 200);
     setTimeout(() => {
       isTransitioning = false;
       if (onArrival) onArrival();
@@ -833,7 +910,8 @@ function startInvestigation() {
 // groups lines into "beats" — runs until a PROTAGONIST line, then pauses for click
 function continueInvestigation() {
   if (invLineIndex >= STORY.investigation.length) {
-    transitionTo('ending-comply', () => playEnding('comply'));
+    prepareEnding('comply');
+    transitionTo('ending-comply', () => showEndingLine('comply'));
     return;
   }
 
@@ -993,8 +1071,7 @@ function showMemoryOverlay(uid) {
 
   const allMemorySounds = [
     metroCityBgm, metroConstructionSfx,
-    baristaBgm, baristaChatter, baristaMachine, baristaFrustrated, baristaCupSlide,
-    memorySfx
+    baristaBgm, baristaChatter, baristaMachine, baristaFrustrated, baristaCupSlide
   ];
   
   allMemorySounds.forEach(s => {
@@ -1002,21 +1079,32 @@ function showMemoryOverlay(uid) {
     s.currentTime = 0;
   });
 
-  memorySfx.play().catch(e => console.log("音效播放被拦截"));
-
   memoryOverlayActive = true;
   updateBGM(); 
 
-  // 4. 根据当前 UID 开启对应的记忆背景音
-  // Object 1: Metro Card
-  if (uid === "53C19186520001") { 
-    metroCityBgm.play().catch(e => console.error("地铁背景音播放失败"));
-  }
-  
-  // Object 2: Barista Pin (修正了这里的 UID 字符串)
-  if (uid === "53AC8C86520001") { 
-    baristaBgm.play().catch(e => console.error("咖啡厅背景音播放失败"));
-  }
+  // 4. 根据当前 UID 开启对应的记忆背景音，等黑屏完全消失后淡入
+  setTimeout(() => {
+    if (uid === "53C19186520001") {
+      metroCityBgm.play().catch(e => console.error("地铁背景音播放失败"));
+      fadeAudioIn(metroCityBgm, 0.4, 800);
+    }
+    if (uid === "53AC8C86520001") {
+      baristaBgm.play().catch(e => console.error("咖啡厅背景音播放失败"));
+      fadeAudioIn(baristaBgm, 0.4, 800);
+    }
+    if (uid === "53B28486520001") {
+      baristaBgm.play().catch(e => console.error("咖啡厅背景音播放失败"));
+      fadeAudioIn(baristaBgm, 0.4, 800);
+    }
+    if (uid === "53A36287520001") {
+      baristaBgm.play().catch(e => console.error("咖啡厅背景音播放失败"));
+      fadeAudioIn(baristaBgm, 0.4, 800);
+    }
+    if (uid === "53C97A86520001") {
+      baristaBgm.play().catch(e => console.error("咖啡厅背景音播放失败"));
+      fadeAudioIn(baristaBgm, 0.4, 800);
+    }
+  }, 1450);
 
   // 5. 渲染逻辑
   memOverlayUid = uid;
@@ -1057,25 +1145,29 @@ function showMemoryOverlayLine() {
   const text = line.text;
 
   // --- Barista Pin 音频触发逻辑 ---
-  if (memOverlayUid === "53359D86520001") {
+  if (memOverlayUid === "53AC8C86520001") {
     
     // 1. 讨论声与咖啡机 (特定时间开始)
     if (text.includes("He was holding a cup")) {
-      baristaChatter.currentTime = 45; // 从45秒开始
+      baristaChatter.volume = 0.5;
+      baristaChatter.currentTime = 45;
       baristaChatter.play().catch(e => {});
-      
-      baristaMachine.currentTime = 10; // 从10秒开始
+
+      baristaMachine.volume = 0.4;
+      baristaMachine.currentTime = 10;
       baristaMachine.play().catch(e => {});
     }
 
     // 2. 挫败感声音 (单次)
     if (text.includes("So frustrating")) {
+      baristaFrustrated.volume = 0.7;
       baristaFrustrated.currentTime = 0;
       baristaFrustrated.play().catch(e => {});
     }
 
     // 3. 移动杯子 (只播前三秒)
     if (text.includes("He pushed the cup")) {
+      baristaCupSlide.volume = 0.6;
       baristaCupSlide.currentTime = 0;
       baristaCupSlide.play().catch(e => {});
       // 3秒后停止
@@ -1083,6 +1175,116 @@ function showMemoryOverlayLine() {
         baristaCupSlide.pause();
         baristaCupSlide.currentTime = 0;
       }, 3000);
+    }
+  }
+
+  // --- Coffee Cup 音频触发逻辑 ---
+  if (memOverlayUid === "53B28486520001") {
+
+    // 1. 挪椅子 (单次，4秒后停)
+    if (text.includes("Someone stopped beside me")) {
+      cupChairSfx.volume = 0.6;
+      cupChairSfx.currentTime = 0;
+      cupChairSfx.play().catch(e => {});
+      setTimeout(() => {
+        cupChairSfx.pause();
+        cupChairSfx.currentTime = 0;
+      }, 4000);
+    }
+
+    // 2. 放包 (单次，10秒后停)
+    if (text.includes("He put his bag on the chair back")) {
+      cupBagSfx.volume = 0.6;
+      cupBagSfx.currentTime = 0;
+      cupBagSfx.play().catch(e => {});
+      setTimeout(() => {
+        cupBagSfx.pause();
+        cupBagSfx.currentTime = 0;
+      }, 10000);
+    }
+  }
+
+  // --- Rent Paper 音频触发逻辑 ---
+  if (memOverlayUid === "53A36287520001") {
+
+    // 1. rent paper (单次)
+    if (text.includes("He walked to the table beside me")) {
+      rentPaperSfx.volume = 0.6;
+      rentPaperSfx.currentTime = 0;
+      rentPaperSfx.play().catch(e => {});
+    }
+
+    // 2. 纸张滑动 (单次)
+    if (text.includes("The stranger looked at it")) {
+      rentSlideSfx.volume = 0.6;
+      rentSlideSfx.currentTime = 0;
+      rentSlideSfx.play().catch(e => {});
+    }
+
+    // 3. 脚步 (单次，3秒后停)
+    if (text.includes("The cafe owner stood there for two seconds")) {
+      rentFootstepSfx.volume = 0.8;
+      rentFootstepSfx.currentTime = 0;
+      rentFootstepSfx.play().catch(e => {});
+      setTimeout(() => {
+        rentFootstepSfx.pause();
+        rentFootstepSfx.currentTime = 0;
+      }, 3000);
+    }
+  }
+
+  // --- AirPod 音频触发逻辑 ---
+  if (memOverlayUid === "53C97A86520001") {
+
+    // 1. 开门声 (单次)
+    if (text.includes("The stranger left first")) {
+      airpodDoorSfx.volume = 0.8;
+      airpodDoorSfx.currentTime = 0;
+      airpodDoorSfx.play().catch(e => {});
+    }
+
+    // 2. 付款 (单次)
+    if (text.includes("I paid and headed for the door")) {
+      airpodPaySfx.volume = 0.6;
+      airpodPaySfx.currentTime = 0;
+      airpodPaySfx.play().catch(e => {});
+    }
+
+    // 3. 咖啡厅背景音结束 + 嘈杂声开始循环
+    if (text.includes("Around the corner")) {
+      fadeAudioOut(baristaBgm, 600);
+      airpodCrowdBgm.volume = 0.3;
+      airpodCrowdBgm.currentTime = 0;
+      airpodCrowdBgm.play().catch(e => {});
+    }
+
+    // 4. 远处人声 (单次)
+    if (text.includes("The cafe owner was holding the paper")) {
+      airpodVoiceSfx.volume = 0.8;
+      airpodVoiceSfx.currentTime = 0;
+      airpodVoiceSfx.play().catch(e => {});
+    }
+
+    // 5. 跑 (单次，3秒后停) + 沉重呼吸 (单次)
+    if (text.includes("I was still running")) {
+      airpodRunSfx.volume = 0.8;
+      airpodRunSfx.currentTime = 0;
+      airpodRunSfx.play().catch(e => {});
+      setTimeout(() => {
+        airpodRunSfx.pause();
+        airpodRunSfx.currentTime = 0;
+      }, 3000);
+
+      airpodBreathSfx.volume = 1;
+      airpodBreathSfx.currentTime = 0;
+      airpodBreathSfx.play().catch(e => {});
+    }
+
+    // 6. body fall thump (单次)
+    if (text.includes("The drain cover was open")) {
+      airpodThumpSfx.volume = 0.5;
+      airpodThumpSfx.currentTime = 0;
+      airpodThumpSfx.play().catch(e => {});
     }
   }
 
@@ -1129,33 +1331,33 @@ function closeMemoryOverlay() {
 
   memoryOverlayActive = false;
   memOverlayMemory = null;
-  memOverlayUid = null;
-  memOverlayCompleted = false;
   clearTimeout(memOverlayTimer);
-  const baristaSounds = [
-    baristaBgm, baristaChatter, baristaMachine, 
-    baristaFrustrated, baristaCupSlide
-  ];
-  
-  baristaSounds.forEach(s => {
+
+  // 背景音淡出
+  [metroCityBgm, metroConstructionSfx, baristaBgm, baristaChatter, baristaMachine, baristaCupSlide, airpodCrowdBgm].forEach(s => {
+    if (!s.paused) fadeAudioOut(s, 800);
+  });
+  baristaFrustrated.pause();
+  baristaFrustrated.currentTime = 0;
+  [cupChairSfx, cupBagSfx, rentPaperSfx, rentSlideSfx, rentFootstepSfx,
+   airpodDoorSfx, airpodPaySfx, airpodVoiceSfx, airpodRunSfx, airpodBreathSfx, airpodThumpSfx].forEach(s => {
     s.pause();
     s.currentTime = 0;
   });
 
+  // 黑屏过渡回主线
+  const fadeOverlay = document.getElementById('fadeOverlay');
+  const memOverlay = document.getElementById('memoryOverlay');
+  fadeOverlay.classList.add('active');
 
-  metroCityBgm.pause();
-  metroCityBgm.currentTime = 0;
-  metroConstructionSfx.pause();
-  metroConstructionSfx.currentTime = 0;
-  
-  const overlay = document.getElementById('memoryOverlay');
-  overlay.classList.remove('visible');
   setTimeout(() => {
-    overlay.classList.add('hidden');
-if (typeof updateBGM === 'function') {
-      updateBGM();
-    }
-    }, 400);
+    memOverlay.classList.remove('visible');
+    memOverlay.classList.add('hidden');
+    memOverlayUid = null;
+    memOverlayCompleted = false;
+    updateBGM();
+    fadeOverlay.classList.remove('active');
+  }, 800);
 }
 
 function toggleCaseFile() {
@@ -1222,15 +1424,15 @@ function renderCaseFile() {
 
 // called by socket.io when hardware fires
 function triggerNFC(uid) {
-  // works from any scene — just pop the memory overlay
   if (STORY.memories[uid]) {
-    // flash effect
-    const flash = document.getElementById('scanFlash');
-    if (flash) {
-      flash.classList.add('flash');
-      setTimeout(() => flash.classList.remove('flash'), 110);
-    }
-    showMemoryOverlay(uid);
+    memorySfx.currentTime = 0;
+    memorySfx.play().catch(e => {});
+    const overlay = document.getElementById('fadeOverlay');
+    overlay.classList.add('active');
+    setTimeout(() => {
+      showMemoryOverlay(uid);
+      setTimeout(() => overlay.classList.remove('active'), 650);
+    }, 800);
   }
 }
 
@@ -1247,16 +1449,16 @@ function chooseEnding(type) {
   transitionTo(`ending-${type}`, () => playEnding(type));
 }
 
-function playEnding(type) {
+function prepareEnding(type) {
   const ending = STORY.endings[type];
-  const titleEl = document.getElementById(`ending-title-${type}`);
-  const linesEl = document.getElementById(`ending-lines-${type}`);
-  const btnEl = document.getElementById(`ending-btn-${type}`);
-
-  titleEl.textContent = ending.title;
-  linesEl.innerHTML = '';
-  btnEl.classList.add('hidden');
+  document.getElementById(`ending-title-${type}`).textContent = ending.title;
+  document.getElementById(`ending-lines-${type}`).innerHTML = '';
+  document.getElementById(`ending-btn-${type}`).classList.add('hidden');
   endingLineIndex = 0;
+}
+
+function playEnding(type) {
+  prepareEnding(type);
   showEndingLine(type);
 }
 
@@ -1292,7 +1494,6 @@ function restartGame() {
   discoveredObjects.clear();
   closeCaseFile();
   renderCaseFile();
-  closeMemoryOverlay();
   transitionTo('intro');
 }
 
