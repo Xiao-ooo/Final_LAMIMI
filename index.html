@@ -5,6 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>The Last Witness</title>
+    <link rel="icon" type="image/svg+xml" href="favicon.svg">
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -96,11 +97,11 @@
                 <div class="dialogue-panel" id="invPanel">
                     <div class="dialogue-speaker" id="invSpeaker"></div>
                     <div class="dialogue-text" id="invText"></div>
+                    <div id="invChoiceWrap" class="inv-choice-wrap hidden" aria-live="polite"></div>
                     <span class="dialogue-hint" id="invHint">
                         Click anywhere or press Space ›
                     </span>
                 </div>
-                <div id="invChoiceWrap" class="inv-choice-wrap hidden" aria-live="polite"></div>
             </div>
 
         </div>
@@ -130,22 +131,32 @@
     <div class="scene" id="scene-ending-comply">
         <div class="scene-bg"></div>
         <div class="ending-content">
-            <div class="ending-label">Ending A</div>
-            <div class="ending-title" id="ending-title-comply"></div>
-            <div class="ending-lines" id="ending-lines-comply"></div>
-            <button class="restart-btn hidden" id="ending-btn-comply" onclick="restartGame()">Begin Again</button>
+            <div class="ending-testimony" id="ending-testimony-comply">
+                <div class="ending-title" id="ending-title-comply"></div>
+                <div class="ending-lines" id="ending-lines-comply"></div>
+                <button class="reveal-btn hidden" id="ending-reveal-comply" onclick="revealEnding('comply')">
+                    ◈&nbsp;&nbsp;Reveal Case Result&nbsp;&nbsp;◈
+                </button>
+            </div>
+            <div class="ending-report" id="ending-report-comply"></div>
         </div>
+        <button class="restart-btn hidden" id="ending-btn-comply" onclick="restartGame()">Begin Again</button>
     </div>
 
     <!-- 05b · ENDING B — Resist -->
     <div class="scene" id="scene-ending-resist">
         <div class="scene-bg"></div>
         <div class="ending-content">
-            <div class="ending-label">Ending B</div>
-            <div class="ending-title" id="ending-title-resist"></div>
-            <div class="ending-lines" id="ending-lines-resist"></div>
-            <button class="restart-btn hidden" id="ending-btn-resist" onclick="restartGame()">Begin Again</button>
+            <div class="ending-testimony" id="ending-testimony-resist">
+                <div class="ending-title" id="ending-title-resist"></div>
+                <div class="ending-lines" id="ending-lines-resist"></div>
+                <button class="reveal-btn hidden" id="ending-reveal-resist" onclick="revealEnding('resist')">
+                    ◈&nbsp;&nbsp;Reveal Case Result&nbsp;&nbsp;◈
+                </button>
+            </div>
+            <div class="ending-report" id="ending-report-resist"></div>
         </div>
+        <button class="restart-btn hidden" id="ending-btn-resist" onclick="restartGame()">Begin Again</button>
     </div>
 
     <div class="case-file-modal hidden" id="caseFileModal" onclick="closeCaseFile()">

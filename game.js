@@ -263,7 +263,7 @@ const STORY = {
         ]
       },
 
-      // [Q9] Narrative closure
+      // [Q9] Narrative closure — answer determines ending
       {
         type: "choice",
         question: [
@@ -272,13 +272,13 @@ const STORY = {
             text: "I understand."
           },
           {
-            speaker: "INVESTIGATOR", //use audio
+            speaker: "INVESTIGATOR",
             text: "(Pauses, as if organizing notes.)"
           },
           {
             speaker: "INVESTIGATOR",
             text:
-              "So the situation was, the cafe owner was already in a bad mood while inside the café, then he and the man went outside for a talk." //However, it seemed like they didn't have a friendly conversation.
+              "So the situation was, the cafe owner was already in a bad mood while inside the café, then he and the man went outside for a talk."
           },
           {
             speaker: "INVESTIGATOR",
@@ -293,11 +293,13 @@ const STORY = {
         options: [
           {
             label: "A",
-            text: "Yes, that sounds about right."
+            text: "Yes, that sounds about right.",
+            endingKey: "comply"
           },
           {
             label: "B",
-            text: "Umm… I'm not sure."
+            text: "Umm… I'm not sure.",
+            endingKey: "resist"
           }
         ]
       },
@@ -571,26 +573,31 @@ const STORY = {
     endings: {
       comply: {
         label: "Ending A",
-        title: "After the White Room",
+        title: "The Report",
         lines: [
-          "The door closes.",
-          "Footsteps fade down the corridor.",
-          "You stay seated long enough for the silence to settle.",
-          "Whatever was recorded — it is out of your hands now.",
+          "The investigator was hired by the construction company.",
+          "Based on your account, the investigation concluded:",
+          "the cafe owner was emotionally unstable that day —",
+          "had visited the site in advance,",
+          "intercepted the victim outside the café,",
+          "and pushed him into the uncovered shaft.",
+          "He was charged with intentional homicide.",
+          "The construction company's liability was never examined.",
+          "Everything you said was true.",
+          "You only described what you remembered.",
         ]
       },
       resist: {
         label: "Ending B",
-        title: "What You Cannot Say",
+        title: "Case Unresolved",
         lines: [
-          "The investigator nods.",
-          "He leaves without saying whether it was enough.",
-          "The room stays white for a long time.",
-          "You remember two figures.",
-          "You remember something falling.",
-          "That is all you were able to honestly say.",
-          "Somewhere, the cafe owner goes home.",
-          "You will never know what comes after.",
+          "The investigator was hired by the construction company.",
+          "But your testimony was too uncertain",
+          "to support a definitive finding.",
+          "The investigation concluded: cause of accident unknown.",
+          "The cafe owner was not charged.",
+          "The case remains open.",
+          "The construction company's liability was never examined.",
         ]
       }
     }
@@ -762,6 +769,7 @@ const discoveredObjects = new Set();
 // endings
 let endingLineIndex = 0;
 let endingTimer = null;
+let playerEnding = 'comply';
 
 // ─────────────────────────────────────────────────────────────
 // INIT
@@ -910,8 +918,7 @@ function startInvestigation() {
 // groups lines into "beats" — runs until a PROTAGONIST line, then pauses for click
 function continueInvestigation() {
   if (invLineIndex >= STORY.investigation.length) {
-    prepareEnding('comply');
-    transitionTo('ending-comply', () => showEndingLine('comply'));
+    transitionTo(`ending-${playerEnding}`, () => playEnding(playerEnding));
     return;
   }
 
@@ -988,6 +995,7 @@ function hideInvestigationChoice() {
 
 function resolveInvestigationChoice(opt) {
   hideInvestigationChoice();
+  if (opt.endingKey) playerEnding = opt.endingKey;
   invLineIndex++;
   runInvDialogue(
     [{ speaker: 'PROTAGONIST', text: opt.text }],
@@ -1454,7 +1462,74 @@ function prepareEnding(type) {
   document.getElementById(`ending-title-${type}`).textContent = ending.title;
   document.getElementById(`ending-lines-${type}`).innerHTML = '';
   document.getElementById(`ending-btn-${type}`).classList.add('hidden');
+
+  const revealBtn = document.getElementById(`ending-reveal-${type}`);
+  revealBtn.classList.add('hidden');
+  revealBtn.style.opacity = '0';
+  revealBtn.style.animation = '';
+
+  const reportEl = document.getElementById(`ending-report-${type}`);
+  reportEl.classList.remove('revealed');
+  reportEl.innerHTML = '';
+
+  const testimonyEl = document.getElementById(`ending-testimony-${type}`);
+  if (testimonyEl) testimonyEl.classList.remove('dismissed');
+
   endingLineIndex = 0;
+}
+
+function renderEndingReport(type) {
+  const el = document.getElementById(`ending-report-${type}`);
+  if (!el) return;
+  const isComply = type === 'comply';
+  el.innerHTML = `
+    <div class="report-title">INVESTIGATION REPORT</div>
+    <div class="report-subtitle">Filed by the Engineering Firm</div>
+    <div class="report-meta">
+      <span>Case No.  LM-2024-0319</span>
+      <span>Location  LaMimi Street</span>
+    </div>
+    <div class="report-divider"></div>
+    <div class="report-section">
+      <div class="report-section-title">INCIDENT</div>
+      <div class="report-text">Fatal fall at uncovered shaft<br>LaMimi St. construction zone</div>
+    </div>
+    <div class="report-divider"></div>
+    <div class="report-section">
+      <div class="report-section-title">KEY FINDINGS</div>
+      <div class="report-row">
+        <span class="${isComply ? 'check' : 'cross'}">${isComply ? '✓' : '✗'}</span>
+        <span>Premeditation confirmed</span>
+      </div>
+      <div class="report-row">
+        <span class="${isComply ? 'check' : 'unknown'}">${isComply ? '✓' : '?'}</span>
+        <span>Motive established</span>
+      </div>
+      <div class="report-row">
+        <span class="check">✓</span>
+        <span>Witness testimony on file</span>
+      </div>
+      <div class="report-row">
+        <span class="cross">✗</span>
+        <span>Construction liability</span>
+      </div>
+    </div>
+    <div class="report-divider"></div>
+    <div class="report-section">
+      <div class="report-section-title">SUBJECT STATUS</div>
+      <div class="report-text">Cafe owner (unnamed)<br><strong>${isComply ? 'CHARGED — intentional homicide' : 'NOT CHARGED — released'}</strong></div>
+    </div>
+    <div class="report-section">
+      <div class="report-section-title">WITNESS IMPACT</div>
+      <div class="report-text">${isComply
+        ? 'Testimony clear and decisive.\nNarrative fully confirmed.'
+        : 'Testimony too uncertain.\nNo definitive finding possible.'}</div>
+    </div>
+    <div class="report-divider"></div>
+    <div class="report-stamp-wrap">
+      <div class="report-stamp ${isComply ? 'stamp-closed' : 'stamp-open'}">${isComply ? 'CASE CLOSED' : 'CASE<br>UNRESOLVED'}</div>
+    </div>
+  `;
 }
 
 function playEnding(type) {
@@ -1462,13 +1537,56 @@ function playEnding(type) {
   showEndingLine(type);
 }
 
+function revealEnding(type) {
+  const testimonyEl = document.getElementById(`ending-testimony-${type}`);
+  testimonyEl.classList.add('dismissed');
+
+  renderEndingReport(type);
+  const reportEl = document.getElementById(`ending-report-${type}`);
+
+  // hide all children before container appears so we can stagger them
+  Array.from(reportEl.children).forEach(child => {
+    child.style.opacity = '0';
+    child.style.filter = 'blur(6px)';
+    child.style.transform = 'translateY(10px)';
+  });
+
+  // wait for testimony to fade, then reveal container
+  setTimeout(() => {
+    reportEl.classList.add('revealed');
+
+    // stagger ink-reveal of each section
+    const children = Array.from(reportEl.children);
+    children.forEach((child, i) => {
+      setTimeout(() => {
+        child.style.transition = 'opacity 0.65s ease, filter 0.65s ease, transform 0.65s ease';
+        child.style.opacity = '1';
+        child.style.filter = 'blur(0)';
+        child.style.transform = 'translateY(0)';
+      }, i * 210);
+    });
+
+    const totalDelay = children.length * 210 + 900;
+    setTimeout(() => {
+      document.getElementById(`ending-btn-${type}`).classList.remove('hidden');
+    }, totalDelay);
+
+  }, 700);
+}
+
 function showEndingLine(type) {
   const ending = STORY.endings[type];
   const linesEl = document.getElementById(`ending-lines-${type}`);
-  const btnEl = document.getElementById(`ending-btn-${type}`);
 
   if (endingLineIndex >= ending.lines.length) {
-    setTimeout(() => btnEl.classList.remove('hidden'), 600);
+    const revealBtn = document.getElementById(`ending-reveal-${type}`);
+    setTimeout(() => {
+      revealBtn.classList.remove('hidden');
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        revealBtn.style.opacity = '1';
+        revealBtn.style.animation = 'revealPulse 2.8s ease-in-out 0.5s infinite';
+      }));
+    }, 700);
     return;
   }
 
@@ -1489,6 +1607,7 @@ function restartGame() {
   invLineIndex = 0;
   invPhase = 'idle';
   invQueueActive = false;
+  playerEnding = 'comply';
   hideInvestigationChoice();
   memoryOverlayActive = false;
   discoveredObjects.clear();
@@ -1502,13 +1621,17 @@ function restartGame() {
 // ─────────────────────────────────────────────────────────────
 
 document.addEventListener('keydown', e => {
-  if (e.code === 'Space' || e.code === 'Enter') {
-
-  }
   if (e.key === 'Escape') {
     if (memoryOverlayActive) closeMemoryOverlay();
     return;
   }
+
+  // Introduction left/right arrow navigation
+  if (currentScene === 'introduction') {
+    if (e.code === 'ArrowLeft') { e.preventDefault(); introductionGoPrev(); return; }
+    if (e.code === 'ArrowRight') { e.preventDefault(); introductionGoNext(); return; }
+  }
+
   if (e.code !== 'Space' && e.code !== 'Enter') return;
   e.preventDefault();
 
