@@ -1483,6 +1483,7 @@ function renderEndingReport(type) {
   if (!el) return;
   const isComply = type === 'comply';
   el.innerHTML = `
+    <div class="report-pin"></div>
     <div class="report-title">INVESTIGATION REPORT</div>
     <div class="report-subtitle">Filed by the Engineering Firm</div>
     <div class="report-meta">
