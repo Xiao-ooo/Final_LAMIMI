@@ -23,7 +23,7 @@ const STORY = {
         title: "Investigation Process",
         body:
           `The investigator will ask you questions.
-  Answer however you choose — truthfully, or not.
+  Answer however you choose — through memory.
   
   The objects on the table may surface memories at any time.
   Pick one up and place it on the reader whenever you like.
@@ -389,7 +389,7 @@ const STORY = {
           },
           {
             speaker: "PROTAGONIST",
-            text: "He wasn't on his phone. Wasn't waiting for anyone, it seemed."
+            text: "I took a deep breath, and then I walked."
           },
           {
             speaker: "PROTAGONIST",
@@ -459,7 +459,7 @@ const STORY = {
           },
           {
             speaker: "PROTAGONIST",
-            text: "Someone stopped beside me. \"Is this taken?\" \"No, go ahead.\""
+            text: "Someone stopped in front of me. \"Is this taken?\" \"No, go ahead.\""
           },
           {
             speaker: "PROTAGONIST",
@@ -504,7 +504,7 @@ const STORY = {
           },
           {
             speaker: "PROTAGONIST",
-            text: "He walked to the table beside me — the stranger's table — and placed a sheet of paper down."
+            text: "He walked to the table — our table — and placed a sheet of paper down."
           },
           {
             speaker: "PROTAGONIST",
@@ -549,11 +549,11 @@ const STORY = {
           },
           {
             speaker: "PROTAGONIST",
-            text: "My foot hit something near the entrance. White. Small."
+            text: "Suddently, I remembered something left on the table."
           },
           {
             speaker: "PROTAGONIST",
-            text: "An AirPod. I picked it up and ran."
+            text: "An AirPod. I picked it up and left."
           },
           {
             speaker: "PROTAGONIST",
@@ -585,7 +585,7 @@ const STORY = {
           },
           {
             speaker: "PROTAGONIST",
-            text: "And then there was nothing."
+            text: "My brain went blank."
           },
         ],
       },
@@ -657,6 +657,10 @@ bgm.volume = 0.3;
 const ambientBgm = new Audio('asset/audio/背景音.mp3');
 ambientBgm.loop = true;
 ambientBgm.volume = 0.2;
+
+const endingBgm = new Audio('asset/audio/ending.mp3');
+endingBgm.loop = true;
+endingBgm.volume = 0.4;
 
 const memorySfx = new Audio('asset/audio/investigation/回忆转场.mp3');
 memorySfx.volume = 0.3;
@@ -773,12 +777,19 @@ function updateBGM() {
   if (currentScene === 'investigation') {
     if (bgm.paused) bgm.play().catch(e => {});
     ambientBgm.pause();
+    endingBgm.pause();
   } else if (currentScene === 'intro' || currentScene === 'introduction') {
     bgm.pause();
+    endingBgm.pause();
     if (ambientBgm.paused) ambientBgm.play().catch(e => {});
+  } else if (currentScene.startsWith('ending')) {
+    bgm.pause();
+    ambientBgm.pause();
+    if (endingBgm.paused) endingBgm.play().catch(e => {});
   } else {
     bgm.pause();
     ambientBgm.pause();
+    endingBgm.pause();
   }
 }
 let currentScene = 'intro';
