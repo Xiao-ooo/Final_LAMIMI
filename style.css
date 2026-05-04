@@ -607,29 +607,33 @@ body::before {
 }
 
 /* -- 05 · ENDINGS -- */
-#scene-ending-comply .scene-bg {
-    background-image: url('asset/investigator.png');
-    filter: brightness(0.2) saturate(0.18);
+#scene-ending-comply,
+#scene-ending-resist {
+    overflow-y: auto;
 }
 
+#scene-ending-comply .scene-bg,
 #scene-ending-resist .scene-bg {
     background-image: url('asset/intro.png');
-    filter: brightness(0.2) saturate(0.25) hue-rotate(20deg);
+    filter: brightness(0.5);
+    position: fixed;
 }
 
 .ending-content {
     position: relative;
     z-index: 10;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
-    height: 100%;
-    padding: 0 10vw;
+    min-height: 100vh;
+    padding: 8vh 8vw 7vh;
+    gap: 2.5em;
 }
 
 .ending-testimony {
-    max-width: 520px;
+    max-width: 560px;
     width: 100%;
+    text-align: center;
     transition: opacity 0.75s ease, transform 0.75s ease;
 }
 
@@ -639,12 +643,40 @@ body::before {
     pointer-events: none;
 }
 
+/* cinematic truth lines — typed out on intro.png before the report */
+.truth-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15em;
+    margin-bottom: 1.8em;
+    text-align: left;
+    width: 100%;
+    max-width: 560px;
+}
+
+.truth-line {
+    font-size: 1.3em;
+    color: rgba(252, 244, 225, 0.93);
+    line-height: 2.1;
+    letter-spacing: 0.03em;
+    opacity: 0;
+    animation: lineAppear 0.5s ease forwards;
+    text-shadow: 0 1px 10px rgba(0,0,0,0.65), 0 0 28px rgba(0,0,0,0.4);
+}
+
+/* ending title fades in after truth lines finish */
 .ending-title {
     font-size: 1.55em;
     color: #c8a96e;
     letter-spacing: 0.14em;
-    margin-bottom: 2em;
+    margin-bottom: 1.8em;
     font-weight: normal;
+    opacity: 0;
+    transition: opacity 0.9s ease;
+}
+
+.ending-title.visible {
+    opacity: 1;
 }
 
 #scene-ending-resist .ending-title {
@@ -679,61 +711,37 @@ body::before {
 /* reveal button — appears after testimony, triggers case report */
 .reveal-btn {
     display: block;
-    margin-top: 2.6em;
-    padding: 0.72em 2.2em;
+    margin-top: 2.2em;
+    padding: 0.78em 2.4em;
     background: transparent;
-    border: 1px solid rgba(139, 26, 26, 0.55);
-    color: rgba(195, 70, 70, 0.82);
+    border: 1px solid rgba(200, 169, 110, 0.55);
+    color: rgba(230, 210, 165, 0.95);
     font-family: 'Handwrite', 'Georgia', serif;
-    font-size: 0.72em;
-    letter-spacing: 0.3em;
+    font-size: 0.82em;
+    letter-spacing: 0.28em;
     cursor: pointer;
     text-transform: uppercase;
     border-radius: 3px;
     opacity: 0;
+    text-shadow: 0 1px 8px rgba(0,0,0,0.5);
     transition: border-color 0.3s, color 0.3s, background 0.3s;
 }
 
 .reveal-btn:hover {
-    border-color: rgba(195, 70, 70, 0.9);
-    color: rgba(220, 90, 90, 0.98);
-    background: rgba(180, 50, 50, 0.07);
+    border-color: rgba(200, 169, 110, 0.9);
+    color: rgba(220, 196, 145, 1);
+    background: rgba(200, 169, 110, 0.07);
 }
 
 @keyframes revealPulse {
     0%, 100% { box-shadow: none; }
-    50%       { box-shadow: 0 0 18px rgba(160, 40, 40, 0.32), 0 0 5px rgba(160, 40, 40, 0.18); }
+    50%       { box-shadow: 0 0 20px rgba(200, 169, 110, 0.3), 0 0 6px rgba(200, 169, 110, 0.18); }
 }
 
-/* "Begin Again" — absolutely anchored to bottom-center of the scene */
-.restart-btn {
-    position: absolute;
-    bottom: 5vh;
-    left: 50%;
-    transform: translateX(-50%);
-    z-index: 20;
-    padding: 0.8em 2.6em;
-    background: transparent;
-    border: 1px solid rgba(200, 169, 110, 0.45);
-    color: rgba(200, 169, 110, 0.72);
-    font-family: 'Handwrite', 'Georgia', serif;
-    font-size: 0.78em;
-    letter-spacing: 0.38em;
-    cursor: pointer;
-    text-transform: uppercase;
-    transition: all 0.35s;
-    border-radius: 4px;
-}
-
-.restart-btn:hover {
-    border-color: #c8a96e;
-    color: #c8a96e;
-    background: rgba(200, 169, 110, 0.06);
-}
 
 /* -- ENDING REPORT — full paper pinned to wall -- */
 .ending-report {
-    position: absolute;
+    position: relative;
     width: min(620px, 88vw);
     overflow: visible; /* lets the pin stick out above */
 
@@ -895,6 +903,20 @@ body::before {
     white-space: pre-line;
 }
 
+.report-conclusion-lines {
+    display: flex;
+    flex-direction: column;
+    gap: 0.08em;
+}
+
+.report-conclusion-line {
+    font-size: 0.96em;
+    color: #2a1a0a;
+    line-height: 1.75;
+    font-style: italic;
+    letter-spacing: 0.01em;
+}
+
 .report-stamp-wrap {
     text-align: center;
     margin-top: 1.4em;
@@ -909,11 +931,21 @@ body::before {
     font-weight: bold;
     letter-spacing: 0.16em;
     border: 3px solid;
+    background: transparent;
+    font-family: 'Handwrite', 'Georgia', serif;
     transform: rotate(-5deg);
     line-height: 1.4;
     text-align: center;
     opacity: 0.78;
     filter: blur(0.35px);
+    cursor: pointer;
+    transition: opacity 0.25s, filter 0.25s, transform 0.25s;
+}
+
+.report-stamp:hover {
+    opacity: 1;
+    filter: blur(0px);
+    transform: rotate(-5deg) scale(1.06);
 }
 
 .stamp-closed {

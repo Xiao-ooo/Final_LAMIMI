@@ -194,6 +194,10 @@ const STORY = {
         question: [
           {
             speaker: "INVESTIGATOR",
+            text: "You might sense it yourself — we do suspect this wasn't a simple accident. But we're not a hundred percent certain yet. Still investigating. Your cooperation today means a great deal."
+          },
+          {
+            speaker: "INVESTIGATOR",
             text: "Alright, let's change the subject."
           },
           {
@@ -599,7 +603,26 @@ const STORY = {
           "The construction company's liability was never examined.",
         ]
       }
-    }
+    },
+
+    // cinematic truth — typed out on the ending screen before the report is revealed
+    truth: [
+      "The victim picked up his bag and walked toward the door.",
+      "They said their goodbyes.",
+      "On the table — AirPods, left behind.",
+      "You picked them up and ran out after him.",
+      "Construction barriers. Yellow warning tape.",
+      "Two people, up ahead.",
+      "One was the barista.",
+      "The other was the man from earlier —",
+      "the one who'd said things had been a lot lately.",
+      "The barista was holding the rent paper.",
+      "You were still running. You hadn't reached them.",
+      "The victim stepped back —",
+      "and missed his footing.",
+      "A mistake at the construction site.",
+      "The manhole cover had not been replaced.",
+    ]
   };
 
 // ─────────────────────────────────────────────────────────────
@@ -1458,9 +1481,13 @@ function chooseEnding(type) {
 
 function prepareEnding(type) {
   const ending = STORY.endings[type];
-  document.getElementById(`ending-title-${type}`).textContent = ending.title;
-  document.getElementById(`ending-lines-${type}`).innerHTML = '';
-  document.getElementById(`ending-btn-${type}`).classList.add('hidden');
+
+  const titleEl = document.getElementById(`ending-title-${type}`);
+  titleEl.textContent = ending.title;
+  titleEl.classList.remove('visible');
+
+  const truthEl = document.getElementById(`truth-lines-${type}`);
+  if (truthEl) truthEl.innerHTML = '';
 
   const revealBtn = document.getElementById(`ending-reveal-${type}`);
   revealBtn.classList.add('hidden');
@@ -1472,7 +1499,10 @@ function prepareEnding(type) {
   reportEl.innerHTML = '';
 
   const testimonyEl = document.getElementById(`ending-testimony-${type}`);
-  if (testimonyEl) testimonyEl.classList.remove('dismissed');
+  if (testimonyEl) {
+    testimonyEl.classList.remove('dismissed');
+    testimonyEl.style.display = '';
+  }
 
   endingLineIndex = 0;
 }
@@ -1481,6 +1511,7 @@ function renderEndingReport(type) {
   const el = document.getElementById(`ending-report-${type}`);
   if (!el) return;
   const isComply = type === 'comply';
+  const conclusionLines = STORY.endings[type].lines;
   el.innerHTML = `
     <div class="report-pin"></div>
     <div class="report-title">INVESTIGATION REPORT</div>
@@ -1519,27 +1550,60 @@ function renderEndingReport(type) {
       <div class="report-section-title">SUBJECT STATUS</div>
       <div class="report-text">Cafe owner (unnamed)<br><strong>${isComply ? 'CHARGED — intentional homicide' : 'NOT CHARGED — released'}</strong></div>
     </div>
+    <div class="report-divider"></div>
     <div class="report-section">
-      <div class="report-section-title">WITNESS IMPACT</div>
-      <div class="report-text">${isComply
-        ? 'Testimony clear and decisive.\nNarrative fully confirmed.'
-        : 'Testimony too uncertain.\nNo definitive finding possible.'}</div>
+      <div class="report-section-title">CONCLUSION</div>
+      <div class="report-conclusion-lines">
+        ${conclusionLines.map(line => `<div class="report-conclusion-line">${line}</div>`).join('')}
+      </div>
     </div>
     <div class="report-divider"></div>
     <div class="report-stamp-wrap">
-      <div class="report-stamp ${isComply ? 'stamp-closed' : 'stamp-open'}">${isComply ? 'CASE CLOSED' : 'CASE<br>UNRESOLVED'}</div>
+      <button class="report-stamp ${isComply ? 'stamp-closed' : 'stamp-open'}" onclick="restartGame()">${isComply ? 'CASE CLOSED' : 'CASE<br>UNRESOLVED'}</button>
     </div>
   `;
 }
 
 function playEnding(type) {
   prepareEnding(type);
-  showEndingLine(type);
+  setTimeout(() => showTruthLine(type, 0), 1000);
+}
+
+function showTruthLine(type, index) {
+  if (index >= STORY.truth.length) {
+    // all truth lines typed — fade in the title, then the reveal button
+    const titleEl = document.getElementById(`ending-title-${type}`);
+    setTimeout(() => {
+      if (titleEl) titleEl.classList.add('visible');
+      setTimeout(() => {
+        const revealBtn = document.getElementById(`ending-reveal-${type}`);
+        revealBtn.classList.remove('hidden');
+        requestAnimationFrame(() => requestAnimationFrame(() => {
+          revealBtn.style.opacity = '1';
+          revealBtn.style.animation = 'revealPulse 2.8s ease-in-out 0.5s infinite';
+        }));
+      }, 1000);
+    }, 1400);
+    return;
+  }
+
+  const linesEl = document.getElementById(`truth-lines-${type}`);
+  if (!linesEl) return;
+  const lineEl = document.createElement('div');
+  lineEl.className = 'truth-line';
+  linesEl.appendChild(lineEl);
+
+  // long pause after lines that end a "beat"
+  const longPause = [1, 3, 5, 8, 10, 11, 14].includes(index);
+  typeText(lineEl, STORY.truth[index], () => {
+    setTimeout(() => showTruthLine(type, index + 1), longPause ? 1800 : 1000);
+  });
 }
 
 function revealEnding(type) {
   const testimonyEl = document.getElementById(`ending-testimony-${type}`);
   testimonyEl.classList.add('dismissed');
+  setTimeout(() => { testimonyEl.style.display = 'none'; }, 750);
 
   renderEndingReport(type);
   const reportEl = document.getElementById(`ending-report-${type}`);
@@ -1566,40 +1630,9 @@ function revealEnding(type) {
       }, i * 210);
     });
 
-    const totalDelay = children.length * 210 + 900;
-    setTimeout(() => {
-      document.getElementById(`ending-btn-${type}`).classList.remove('hidden');
-    }, totalDelay);
-
   }, 700);
 }
 
-function showEndingLine(type) {
-  const ending = STORY.endings[type];
-  const linesEl = document.getElementById(`ending-lines-${type}`);
-
-  if (endingLineIndex >= ending.lines.length) {
-    const revealBtn = document.getElementById(`ending-reveal-${type}`);
-    setTimeout(() => {
-      revealBtn.classList.remove('hidden');
-      requestAnimationFrame(() => requestAnimationFrame(() => {
-        revealBtn.style.opacity = '1';
-        revealBtn.style.animation = 'revealPulse 2.8s ease-in-out 0.5s infinite';
-      }));
-    }, 700);
-    return;
-  }
-
-  const lineEl = document.createElement('div');
-  lineEl.className = 'ending-line';
-  linesEl.appendChild(lineEl);
-
-  typeText(lineEl, ending.lines[endingLineIndex], () => {
-    endingLineIndex++;
-    const pause = endingLineIndex % 3 === 0 ? 1400 : 900;
-    endingTimer = setTimeout(() => showEndingLine(type), pause);
-  });
-}
 
 function restartGame() {
   introductionIndex = 0;
