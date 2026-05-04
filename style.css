@@ -73,14 +73,6 @@ body::before {
     background-position: center;
 }
 
-/* vignette on every scene — darkens edges, pulls focus inward */
-.scene-bg::after {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: radial-gradient(ellipse at 50% 50%, transparent 28%, rgba(0, 0, 0, 0.72) 100%);
-    pointer-events: none;
-}
 
 /* quick hide class â€” used all over the place in game.js */
 .hidden {
@@ -90,7 +82,7 @@ body::before {
 /* â”€â”€ 01 Â· INTRO â€” the title card â”€â”€ */
 #scene-intro .scene-bg {
     background-color: #0e0c0a;
-    background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/Intro1.jpeg');
+    background-image: url('asset/intro.png');
     filter: brightness(0.5);
 }
 
@@ -159,7 +151,7 @@ body::before {
 
 /* â”€â”€ 02 Â· INTRODUCTION â”€â”€ */
 #scene-introduction .scene-bg {
-    background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/Intro1.jpeg');
+    background-image: url('asset/intro.png');
     filter: brightness(0.3) saturate(0.5);
 }
 
@@ -450,8 +442,7 @@ body::before {
     background: rgba(8, 6, 4, 0.78);
     border-top: 1px solid rgba(200, 169, 110, 0.08);
     border-radius: 12px 12px 0 0;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    overflow: hidden;
     cursor: pointer;
 }
 
@@ -622,7 +613,7 @@ body::before {
 }
 
 #scene-ending-resist .scene-bg {
-    background-image: url('https://res.cloudinary.com/dilcfjytt/image/upload/p2.jpeg');
+    background-image: url('asset/intro.png');
     filter: brightness(0.2) saturate(0.25) hue-rotate(20deg);
 }
 
@@ -968,9 +959,7 @@ body::before {
     position: absolute;
     inset: 0;
     z-index: 1;
-    background:
-        radial-gradient(ellipse at center, transparent 25%, rgba(4, 2, 0, 0.45) 100%),
-        linear-gradient(135deg, rgba(100, 61, 7, 0.393) 0%, rgba(20, 14, 4, 0.1) 100%);
+    background: none;
     pointer-events: none;
 }
 
