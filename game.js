@@ -1258,7 +1258,7 @@ function showMemoryOverlayLine() {
   if (memOverlayUid === "53B28486520001") {
 
     // 1. 挪椅子 (单次，4秒后停)
-    if (text.includes("Someone stopped beside me")) {
+    if (text.includes("Someone stopped in front of me")) {
       cupChairSfx.volume = 0.6;
       cupChairSfx.currentTime = 0;
       cupChairSfx.play().catch(e => {});
@@ -1284,7 +1284,7 @@ function showMemoryOverlayLine() {
   if (memOverlayUid === "53A36287520001") {
 
     // 1. rent paper (单次)
-    if (text.includes("He walked to the table beside me")) {
+    if (text.includes("He walked to the table — our table —")) {
       rentPaperSfx.volume = 0.6;
       rentPaperSfx.currentTime = 0;
       rentPaperSfx.play().catch(e => {});
