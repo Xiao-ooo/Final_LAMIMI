@@ -54,7 +54,9 @@ const STORY = {
     ],
 
     /* main investigation: linear lines ({ speaker, text }) and choice beats
-       ({ type: 'choice', question?: [...], options: [{ label?, text }] }) */
+       ({ type: 'choice', question?: [...], options: [{ label?, text, points? }], endingFromScore? })
+       Score 0–4 → resist (no false accusation); 5–12 → comply (wrong accusation path).
+       User Q5 skip = inner reaction (0 pts). Max score 12. */
     investigation: [
       // [Q1] Safe opening
       {
@@ -87,11 +89,13 @@ const STORY = {
         options: [
           {
             label: "A",
-            text: "He was making coffee and chatted with me like usual."
+            text: "He was making coffee and chatted with me like usual.",
+            points: 0
           },
           {
             label: "B",
-            text: "He seemed in a bad mood, like he was dealing with something."
+            text: "He seemed in a bad mood, like he was dealing with something.",
+            points: 1
           }
         ]
       },
@@ -110,12 +114,14 @@ const STORY = {
           {
             label: "A",
             text:
-              "He seemed okay? just casual chatting… maybe a little tired."
+              "He seemed okay? just casual chatting… maybe a little tired.",
+            points: 0
           },
           {
             label: "B",
             text:
-              "The conversation felt natural, but he mentioned he had a lot going on lately."
+              "The conversation felt natural, but he mentioned he had a lot going on lately.",
+            points: 0
           }
         ]
       },
@@ -134,12 +140,14 @@ const STORY = {
           {
             label: "A",
             text:
-              "Was he waiting for someone? I don't really remember."
+              "Was he waiting for someone? I don't really remember.",
+            points: 0
           },
           {
             label: "B",
             text:
-              "Actually, yeah... he said he was going out for something, like he had something to do."
+              "Actually, yeah... he said he was going out for something, like he had something to do.",
+            points: 1
           }
         ]
       },
@@ -162,12 +170,14 @@ const STORY = {
           {
             label: "A",
             text:
-              "Yes, he put a piece of paper on his table."
+              "Yes, he put a piece of paper on his table.",
+            points: 2
           },
           {
             label: "B",
             text:
-              "There was a piece of paper, but I didn't notice what he did exactly."
+              "There was a piece of paper, but I didn't notice what he did exactly.",
+            points: 0
           }
         ]
       },
@@ -179,11 +189,13 @@ const STORY = {
         options: [
           {
             text:
-              "This is weird… why do you keep asking about these two? Did something happen between them?"
+              "This is weird… why do you keep asking about these two? Did something happen between them?",
+            points: 0
           },
           {
             text:
-              "I'm not feeling well… let's not talk about this."
+              "I'm not feeling well… let's not talk about this.",
+            points: 0
           }
         ]
       },
@@ -210,12 +222,14 @@ const STORY = {
           {
             label: "A",
             text:
-              "Yeah, he was standing by the barrier, walking back and forth."
+              "Yeah, he was standing by the barrier, walking back and forth.",
+            points: 2
           },
           {
             label: "B",
             text:
-              "Yeah, he was there smoking. Honestly, kind of surprising for someone who makes drinks…"
+              "Yeah, he was there smoking. Honestly, kind of surprising for someone who makes drinks…",
+            points: 0
           }
         ]
       },
@@ -234,12 +248,14 @@ const STORY = {
           {
             label: "A",
             text:
-              "Yeah,there was some tension. They looked like they were arguing."
+              "Yeah,there was some tension. They looked like they were arguing.",
+            points: 2
           },
           {
             label: "B",
             text:
-              "I couldn't hear what they said, but it looked tense."
+              "I couldn't hear what they said, but it looked tense.",
+            points: 0
           }
         ]
       },
@@ -257,18 +273,21 @@ const STORY = {
         options: [
           {
             label: "A",
-            text: "Yes… I saw him fall."
+            text: "Yes… I saw him fall.",
+            points: 1
           },
           {
             label: "B",
-            text: "I heard a 'thump' like something dropped. I didn't get a clear look."
+            text: "I heard a 'thump' like something dropped. I didn't get a clear look.",
+            points: 0
           }
         ]
       },
 
-      // [Q9] Narrative closure — answer determines ending
+      // [Q9] Narrative closure — cumulative score determines ending
       {
         type: "choice",
+        endingFromScore: true,
         question: [
           {
             speaker: "INVESTIGATOR",
@@ -297,12 +316,12 @@ const STORY = {
           {
             label: "A",
             text: "Yes, that sounds about right.",
-            endingKey: "comply"
+            points: 3
           },
           {
             label: "B",
             text: "Umm… I'm not sure.",
-            endingKey: "resist"
+            points: 0
           }
         ]
       },
@@ -792,6 +811,7 @@ const discoveredObjects = new Set();
 let endingLineIndex = 0;
 let endingTimer = null;
 let playerEnding = 'comply';
+let testimonyScore = 0;
 
 // ─────────────────────────────────────────────────────────────
 // INIT
@@ -998,7 +1018,7 @@ function renderInvestigationChoiceButtons(item) {
     btn.textContent = opt.label ? `${opt.label}: ${body}` : body;
     btn.onclick = e => {
       e.stopPropagation();
-      resolveInvestigationChoice(opt);
+      resolveInvestigationChoice(item, opt);
     };
     wrap.appendChild(btn);
   });
@@ -1015,9 +1035,24 @@ function hideInvestigationChoice() {
   }
 }
 
-function resolveInvestigationChoice(opt) {
+function resolveInvestigationChoice(item, opt) {
   hideInvestigationChoice();
-  if (opt.endingKey) playerEnding = opt.endingKey;
+  const pts = typeof opt.points === 'number' ? opt.points : 0;
+  testimonyScore += pts;
+  if (item.endingFromScore) {
+    playerEnding = testimonyScore <= 4 ? 'resist' : 'comply';
+  } else if (opt.endingKey) {
+    playerEnding = opt.endingKey;
+  }
+  const choiceLabel = opt.label ? `${opt.label}: ` : '';
+  console.log(
+    '[testimony]',
+    `+${pts} pts`,
+    `— ${choiceLabel}${opt.text}`,
+    '| running total:',
+    testimonyScore,
+    item.endingFromScore ? `| ending: ${playerEnding}` : ''
+  );
   invLineIndex++;
   runInvDialogue(
     [{ speaker: 'PROTAGONIST', text: opt.text }],
@@ -1641,6 +1676,7 @@ function restartGame() {
   invPhase = 'idle';
   invQueueActive = false;
   playerEnding = 'comply';
+  testimonyScore = 0;
   hideInvestigationChoice();
   memoryOverlayActive = false;
   discoveredObjects.clear();
