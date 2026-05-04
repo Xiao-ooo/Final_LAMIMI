@@ -324,21 +324,28 @@ body::before {
 }
 
 .case-file-btn {
-    background: rgba(16, 12, 8, 0.7);
-    border: 1px solid rgba(200, 169, 110, 0.35);
-    color: #c8a96e;
-    font-family: 'Handwrite', 'Georgia', serif;
-    font-size: 0.62em;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    padding: 0.52em 1.05em;
+    background: transparent;
+    border: none;
+    padding: 0;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
+    line-height: 0;
+}
+
+.case-file-btn-image {
+    display: block;
+    width: clamp(110px, 9.5vw, 170px);
+    height: auto;
 }
 
 .case-file-btn:hover {
-    border-color: rgba(200, 169, 110, 0.7);
-    background: rgba(200, 169, 110, 0.08);
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+}
+
+.case-file-btn:active {
+    transform: translateY(0);
+    filter: brightness(0.95);
 }
 
 .conn-dot {
