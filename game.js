@@ -8,8 +8,7 @@ const STORY = {
         title: "You are in a white room.",
         body:
           `A man sits across from you. Unhurried. Professional.
-  He says he's been hired to understand what happened three weeks ago
-  on LaMimi Street. He heard you were there that afternoon.
+  He says he's been hired to understand what happened three weeks ago on LaMimi Street. He heard you were there that afternoon.
   He thinks you can help.`
       },
       {
@@ -21,7 +20,7 @@ const STORY = {
   There are objects on the table between you.`
       },
       {
-        title: "How to play.",
+        title: "Investigation Process",
         body:
           `The investigator will ask you questions.
   Answer however you choose — truthfully, or not.
