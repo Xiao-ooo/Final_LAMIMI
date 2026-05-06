@@ -273,6 +273,15 @@ body::before {
     }
 }
 
+.introduction-keyboard-hint {
+    font-size: 0.58em;
+    letter-spacing: 0.35em;
+    color: rgba(200, 169, 110, 0.38);
+    text-transform: uppercase;
+    text-align: right;
+    margin-top: 0.55em;
+}
+
 /* â”€â”€ 03 Â· WHITE ROOM â”€â”€ */
 #scene-investigation .scene-bg {
     background-color: #d8d4ce;
@@ -316,11 +325,24 @@ body::before {
     letter-spacing: 0.08em;
 }
 
-.conn-status {
+/* speaker row — just the label now */
+.dialogue-panel-top {
+    margin-bottom: 0.5em;
+}
+
+.dialogue-panel-top .dialogue-speaker {
+    margin-bottom: 0;
+}
+
+/* case file wrapper — absolutely pinned inside the textbox, scales with panel height */
+.case-file-wrapper {
+    position: absolute;
+    top: 26%;
+    right: 5.5em;
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 0.5em;
-    padding-top: 0.35em;
+    gap: 0.35em;
 }
 
 .case-file-btn {
@@ -328,25 +350,82 @@ body::before {
     border: none;
     padding: 0;
     cursor: pointer;
+    flex-shrink: 0;
     transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
     line-height: 0;
 }
 
 .case-file-btn-image {
     display: block;
-    width: clamp(110px, 9.5vw, 170px);
+    width: clamp(44px, 3.8vw, 62px);
     height: auto;
 }
 
 .case-file-btn:hover {
-    transform: translateY(-1px);
-    filter: brightness(1.05);
+    transform: translateY(-2px);
+    filter: brightness(1.1);
 }
 
 .case-file-btn:active {
     transform: translateY(0);
     filter: brightness(0.95);
 }
+
+/* locked state — dim, not openable but still intercepts clicks so they don't pass through */
+.case-file-btn.locked {
+    opacity: 0.25;
+    filter: grayscale(0.55);
+    cursor: default;
+}
+
+/* hint glow — pulses when "Feel free to pick them up" line is shown */
+@keyframes folderHintGlow {
+    0%, 100% { opacity: 0.28; filter: grayscale(0.55); }
+    50%       { opacity: 0.7;  filter: grayscale(0.2) brightness(1.3) drop-shadow(0 0 10px rgba(200,169,110,0.6)); }
+}
+
+.case-file-btn.hint-pulse {
+    animation: folderHintGlow 1.8s ease-in-out infinite;
+}
+
+/* scan hint label below the folder */
+.case-file-scan-hint {
+    display: block;
+    text-align: center;
+    font-size: 0.5em;
+    letter-spacing: 0.22em;
+    color: #6a5640;
+    text-transform: uppercase;
+    line-height: 1.7;
+    opacity: 0;
+    transition: opacity 0.45s;
+    pointer-events: none;
+}
+
+.case-file-scan-hint.show {
+    opacity: 1;
+    animation: scanHintPulse 2s ease-in-out infinite;
+}
+
+@keyframes scanHintPulse {
+    0%, 100% { opacity: 0.45; }
+    50%       { opacity: 1; }
+}
+
+@keyframes folderUnlockFlash {
+    0%   { opacity: 0.28; filter: grayscale(0.55); }
+    35%  { opacity: 1;    filter: brightness(1.9) saturate(1.3) drop-shadow(0 0 14px rgba(200, 169, 110, 0.85)); }
+    70%  { filter: brightness(1.1) drop-shadow(0 0 5px rgba(200, 169, 110, 0.35)); }
+    100% { opacity: 1;    filter: brightness(1); }
+}
+
+.conn-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5em;
+    padding-top: 0.35em;
+}
+
 
 .conn-dot {
     width: 6px;
@@ -372,11 +451,11 @@ body::before {
     flex: 1;
 }
 
+/* investigator dialogue panel */
 .inv-dialogue {
     width: 100%;
 }
 
-/* investigator dialogue panel */
 .inv-dialogue .dialogue-panel {
     background: url('asset/textbox.png') center / 100% 100% no-repeat;
     border-top: none;
@@ -388,6 +467,13 @@ body::before {
     min-height: 33vh;
     padding: 3.9em 5.2em 2.8em 6em;
     cursor: pointer;
+    display: flex;
+    flex-direction: column;
+}
+
+.inv-dialogue .dialogue-panel .dialogue-hint {
+    margin-top: auto;
+    padding-top: 0.6em;
 }
 
 .inv-dialogue .dialogue-panel .dialogue-speaker {
@@ -471,25 +557,32 @@ body::before {
 
 .dialogue-hint {
     display: block;
-    text-align: right;
-    font-size: 0.78em;
-    letter-spacing: 0.38em;
+    text-align: left;
+    font-size: 0.7em;
+    letter-spacing: 0.32em;
     color: #4a3828;
     text-transform: uppercase;
-    margin-top: 1em;
+    margin-top: 1.2em;
     opacity: 0;
-    transition: opacity 0.3s;
-    animation: blink 2s ease-in-out infinite;
+    transition: opacity 0.4s;
+    pointer-events: none;
 }
 
 .dialogue-hint.show {
     opacity: 1;
+    animation: blink 2.4s ease-in-out infinite;
+}
+
+.dialogue-hint.dim {
+    opacity: 0;
+    animation: none;
 }
 
 @keyframes blink {
-    0%, 100% { opacity: 0.25; }
+    0%, 100% { opacity: 0.3; }
     50% { opacity: 1; }
 }
+
 
 /* dev panel â€” bottom left, for testing without hardware */
 .dev-panel {
@@ -669,6 +762,17 @@ body::before {
     opacity: 0;
     animation: lineAppear 0.5s ease forwards;
     text-shadow: 0 1px 12px rgba(0,0,0,0.7), 0 0 32px rgba(0,0,0,0.45);
+    transition: color 0.8s ease, text-shadow 0.8s ease, opacity 0.8s ease;
+}
+
+.truth-line.current {
+    color: rgba(255, 250, 235, 1);
+    text-shadow: 0 0 22px rgba(230, 210, 160, 0.3), 0 1px 12px rgba(0,0,0,0.7);
+}
+
+.truth-line.dimmed {
+    color: rgba(252, 244, 225, 0.3);
+    text-shadow: none;
 }
 
 /* ending title fades in after truth lines finish */

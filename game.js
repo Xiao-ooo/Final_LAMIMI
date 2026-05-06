@@ -807,6 +807,10 @@ let invQueueActive = false;
 let invComplete = null;
 let hasPlayedOpening = false;
 let invLineIndex = 0;        // progress through STORY.investigation
+let hintSeen = false;        // after first interaction, hint never shows again
+let invAutoComplete = false; // skip the final click before choice buttons appear
+let caseFileUnlocked = false; // unlocks on first NFC object discovered
+let scanHintTimer = null;    // auto-hide timer for the scan hint flash
 
 // memory overlay state
 let memoryOverlayActive = false;
@@ -924,6 +928,9 @@ function renderIntroductionPage() {
 
   nextBtn.classList.toggle('introduction-nav-finish', onLast);
   nextBtn.textContent = onLast ? 'Begin →' : 'Continue →';
+
+  const kbHint = document.querySelector('.introduction-keyboard-hint');
+  if (kbHint) kbHint.style.opacity = onFirst ? '' : '0';
 }
 
 function goToIntroduction() {
@@ -1008,6 +1015,7 @@ function showInvestigationChoice(item) {
     renderInvestigationChoiceButtons(item);
     return;
   }
+  invAutoComplete = true;
   runInvDialogue(q, () => renderInvestigationChoiceButtons(item));
 }
 
@@ -1073,8 +1081,47 @@ function resolveInvestigationChoice(item, opt) {
 
 function showInvContinueHint() {
   invPhase = 'waiting';
-  const hint = document.getElementById('invHint');
-  hint.classList.add('show');
+  if (!hintSeen) {
+    const hint = document.getElementById('invHint');
+    hint.classList.add('show');
+  }
+}
+
+function showCaseFileHint() {
+  if (caseFileUnlocked) return;
+  const btn = document.getElementById('caseFileBtn');
+  const scanHint = document.getElementById('caseFileScanHint');
+  if (btn) btn.classList.add('hint-pulse');
+  if (scanHint) {
+    scanHint.classList.remove('hidden');
+    requestAnimationFrame(() => scanHint.classList.add('show'));
+  }
+}
+
+function hideCaseFileHint() {
+  clearTimeout(scanHintTimer);
+  const btn = document.getElementById('caseFileBtn');
+  const scanHint = document.getElementById('caseFileScanHint');
+  if (btn) btn.classList.remove('hint-pulse');
+  if (scanHint) {
+    scanHint.classList.remove('show');
+    setTimeout(() => scanHint.classList.add('hidden'), 450);
+  }
+}
+
+function flashScanHint() {
+  clearTimeout(scanHintTimer);
+  const btn = document.getElementById('caseFileBtn');
+  const scanHint = document.getElementById('caseFileScanHint');
+  if (!scanHint) return;
+  scanHint.classList.remove('hidden');
+  requestAnimationFrame(() => scanHint.classList.add('show'));
+  if (btn) btn.classList.add('hint-pulse');
+  scanHintTimer = setTimeout(() => {
+    scanHint.classList.remove('show');
+    if (btn) btn.classList.remove('hint-pulse');
+    setTimeout(() => scanHint.classList.add('hidden'), 450);
+  }, 2500);
 }
 
 function runInvDialogue(lines, onComplete) {
@@ -1093,19 +1140,37 @@ function runInvDialogue(lines, onComplete) {
 function showInvLine() {
   const line = invQueue[invQueueIndex];
   const hint = document.getElementById('invHint');
-  hint.classList.remove('show');
+  hint.classList.remove('show', 'dim');
   document.getElementById('invSpeaker').textContent = line.speaker;
+
+  if (line.text && line.text.includes('Feel free to pick them up')) {
+    showCaseFileHint();
+  } else {
+    hideCaseFileHint();
+  }
+
   typeText(document.getElementById('invText'), line.text, () => {
-    // only show hint if more lines or at end of batch
-    if (invQueueIndex < invQueue.length - 1) {
-      hint.classList.add('show');
-    } else {
+    // if last line of a choice question, auto-complete without click
+    if (invAutoComplete && invQueueIndex === invQueue.length - 1) {
+      invAutoComplete = false;
+      invQueueActive = false;
+      invPhase = 'idle';
+      const cb = invComplete;
+      invComplete = null;
+      if (cb) cb();
+    } else if (!hintSeen) {
       hint.classList.add('show');
     }
   });
 }
 
 function advanceInvDialogue() {
+  // Mark hint as permanently seen on every interaction
+  if (!hintSeen) {
+    hintSeen = true;
+    document.getElementById('invHint').classList.remove('show', 'dim');
+  }
+
   if (invPhase === 'waiting') {
     invPhase = 'idle';
     continueInvestigation();
@@ -1119,7 +1184,6 @@ function advanceInvDialogue() {
   if (!typingDone) {
     const line = invQueue[invQueueIndex];
     skipTypewriter(document.getElementById('invText'), line.text);
-    document.getElementById('invHint').classList.add('show');
     return;
   }
 
@@ -1399,10 +1463,25 @@ function advanceMemoryOverlay() {
   }
 }
 
+function unlockCaseFile() {
+  if (caseFileUnlocked) return;
+  hideCaseFileHint();
+  caseFileUnlocked = true;
+  const btn = document.getElementById('caseFileBtn');
+  if (!btn) return;
+  btn.style.animation = 'folderUnlockFlash 1.6s ease forwards';
+  setTimeout(() => {
+    btn.style.animation = '';
+    btn.classList.remove('locked');
+  }, 1600);
+}
+
 function closeMemoryOverlay() {
   if (memOverlayCompleted && memOverlayUid && STORY.memories[memOverlayUid]) {
+    const isFirst = discoveredObjects.size === 0 && !caseFileUnlocked;
     discoveredObjects.add(memOverlayUid);
     renderCaseFile();
+    if (isFirst) setTimeout(() => unlockCaseFile(), 1000);
   }
 
   memoryOverlayActive = false;
@@ -1437,6 +1516,7 @@ function closeMemoryOverlay() {
 }
 
 function toggleCaseFile() {
+  if (!caseFileUnlocked) { flashScanHint(); return; }
   const modal = document.getElementById('caseFileModal');
   if (!modal) return;
   const isHidden = modal.classList.contains('hidden');
@@ -1500,6 +1580,8 @@ function renderCaseFile() {
 
 // called by socket.io when hardware fires
 function triggerNFC(uid) {
+  if (connDot) connDot.classList.add('on');
+  if (connTxt) connTxt.textContent = 'connected';
   if (STORY.memories[uid]) {
     memorySfx.currentTime = 0;
     memorySfx.play().catch(e => {});
@@ -1616,8 +1698,13 @@ function playEnding(type) {
 }
 
 function showTruthLine(type, index) {
+  const linesEl = document.getElementById(`truth-lines-${type}`);
+
   if (index >= STORY.truth.length) {
-    // all truth lines typed — fade in the title, then the reveal button
+    // dim the last line now that it's done
+    const last = linesEl && linesEl.querySelector('.truth-line.current');
+    if (last) { last.classList.remove('current'); last.classList.add('dimmed'); }
+
     const titleEl = document.getElementById(`ending-title-${type}`);
     setTimeout(() => {
       if (titleEl) titleEl.classList.add('visible');
@@ -1628,18 +1715,28 @@ function showTruthLine(type, index) {
           revealBtn.style.opacity = '1';
           revealBtn.style.animation = 'revealPulse 2.8s ease-in-out 0.5s infinite';
         }));
+        revealBtn.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }, 1000);
     }, 1400);
     return;
   }
 
-  const linesEl = document.getElementById(`truth-lines-${type}`);
   if (!linesEl) return;
+
+  // dim the previously active line
+  const prevCurrent = linesEl.querySelector('.truth-line.current');
+  if (prevCurrent) {
+    prevCurrent.classList.remove('current');
+    prevCurrent.classList.add('dimmed');
+  }
+
   const lineEl = document.createElement('div');
-  lineEl.className = 'truth-line';
+  lineEl.className = 'truth-line current';
   linesEl.appendChild(lineEl);
 
-  // long pause after lines that end a "beat"
+  // scroll to keep the new line in view
+  setTimeout(() => lineEl.scrollIntoView({ behavior: 'smooth', block: 'center' }), 80);
+
   const longPause = [1, 3, 5, 8, 10, 11, 14].includes(index);
   typeText(lineEl, STORY.truth[index], () => {
     setTimeout(() => showTruthLine(type, index + 1), longPause ? 1800 : 1000);
@@ -1688,6 +1785,13 @@ function restartGame() {
   invQueueActive = false;
   playerEnding = 'comply';
   testimonyScore = 0;
+  hintSeen = false;
+  invAutoComplete = false;
+  caseFileUnlocked = false;
+  clearTimeout(scanHintTimer);
+  hideCaseFileHint();
+  const caseBtn = document.getElementById('caseFileBtn');
+  if (caseBtn) caseBtn.classList.add('locked');
   hideInvestigationChoice();
   memoryOverlayActive = false;
   discoveredObjects.clear();

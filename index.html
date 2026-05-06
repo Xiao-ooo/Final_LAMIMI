@@ -66,6 +66,7 @@
                         id="introductionNext" onclick="introductionGoNext()"
                         aria-label="Continue">Continue →</button>
                 </div>
+                <p class="introduction-keyboard-hint">← → arrow keys to navigate</p>
             </div>
         </div>
     </div>
@@ -81,9 +82,6 @@
                     <div class="case-name">The Last Witness</div>
                 </div>
                 <div class="top-bar-right">
-                    <button class="case-file-btn" id="caseFileBtn" onclick="toggleCaseFile()" aria-label="Open case file">
-                        <img class="case-file-btn-image" src="asset/case.png" alt="Case file">
-                    </button>
                     <div class="conn-status">
                         <span class="conn-dot" id="connDot"></span>
                         <span class="conn-text" id="connText">offline</span>
@@ -95,12 +93,20 @@
 
             <div id="invDialogue" class="inv-dialogue hidden">
                 <div class="dialogue-panel" id="invPanel">
-                    <div class="dialogue-speaker" id="invSpeaker"></div>
+                    <div class="dialogue-panel-top">
+                        <div class="dialogue-speaker" id="invSpeaker"></div>
+                    </div>
                     <div class="dialogue-text" id="invText"></div>
                     <div id="invChoiceWrap" class="inv-choice-wrap hidden" aria-live="polite"></div>
                     <span class="dialogue-hint" id="invHint">
-                        Click anywhere or press Space ›
+                        Click or Space ›
                     </span>
+                    <div class="case-file-wrapper" id="caseFileWrapper" onclick="event.stopPropagation()">
+                        <button class="case-file-btn locked" id="caseFileBtn" onclick="toggleCaseFile();" aria-label="Open case file">
+                            <img class="case-file-btn-image" src="asset/case.png" alt="Case file">
+                        </button>
+                        <span class="case-file-scan-hint hidden" id="caseFileScanHint">Scan objects<br>to unlock</span>
+                    </div>
                 </div>
             </div>
 
