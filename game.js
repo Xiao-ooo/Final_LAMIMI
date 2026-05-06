@@ -1723,7 +1723,6 @@ function showTruthLine(type, index) {
   const linesEl = document.getElementById(`truth-lines-${type}`);
 
   if (index >= STORY.truth.length) {
-    // dim the last line now that it's done
     const last = linesEl && linesEl.querySelector('.truth-line.current');
     if (last) { last.classList.remove('current'); last.classList.add('dimmed'); }
 
@@ -1773,28 +1772,22 @@ function revealEnding(type) {
   renderEndingReport(type);
   const reportEl = document.getElementById(`ending-report-${type}`);
 
-  // hide all children before container appears so we can stagger them
   Array.from(reportEl.children).forEach(child => {
-    child.style.opacity = '0';
-    child.style.filter = 'blur(6px)';
+    child.style.opacity   = '0';
+    child.style.filter    = 'blur(6px)';
     child.style.transform = 'translateY(10px)';
   });
 
-  // wait for testimony to fade, then reveal container
   setTimeout(() => {
     reportEl.classList.add('revealed');
-
-    // stagger ink-reveal of each section
-    const children = Array.from(reportEl.children);
-    children.forEach((child, i) => {
+    Array.from(reportEl.children).forEach((child, i) => {
       setTimeout(() => {
         child.style.transition = 'opacity 0.65s ease, filter 0.65s ease, transform 0.65s ease';
-        child.style.opacity = '1';
-        child.style.filter = 'blur(0)';
-        child.style.transform = 'translateY(0)';
+        child.style.opacity    = '1';
+        child.style.filter     = 'blur(0)';
+        child.style.transform  = 'translateY(0)';
       }, i * 210);
     });
-
   }, 700);
 }
 
