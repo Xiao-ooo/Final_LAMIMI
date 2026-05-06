@@ -931,6 +931,25 @@ function renderIntroductionPage() {
 
   const kbHint = document.querySelector('.introduction-keyboard-hint');
   if (kbHint) kbHint.style.opacity = onFirst ? '' : '0';
+
+  const pageEl = document.getElementById('introductionPage');
+  const scrollHint = document.getElementById('introScrollHint');
+  if (scrollHint && pageEl) {
+    pageEl.scrollTop = 0;
+    requestAnimationFrame(() => {
+      const overflows = pageEl.scrollHeight > pageEl.clientHeight + 2;
+      scrollHint.classList.toggle('hidden', !overflows);
+      if (overflows) {
+        const hideOnScroll = () => {
+          if (pageEl.scrollTop > 10) {
+            scrollHint.classList.add('hidden');
+            pageEl.removeEventListener('scroll', hideOnScroll);
+          }
+        };
+        pageEl.addEventListener('scroll', hideOnScroll);
+      }
+    });
+  }
 }
 
 function goToIntroduction() {
@@ -963,14 +982,16 @@ function introductionGoNext() {
 
 function startInvestigation() {
   transitionTo('investigation', () => {
-    if (!hasPlayedOpening) {
-      hasPlayedOpening = true;
-      runInvDialogue(STORY.opening, () => {
+    setTimeout(() => {
+      if (!hasPlayedOpening) {
+        hasPlayedOpening = true;
+        runInvDialogue(STORY.opening, () => {
+          continueInvestigation();
+        });
+      } else {
         continueInvestigation();
-      });
-    } else {
-      continueInvestigation();
-    }
+      }
+    }, 1200);
   });
 }
 
@@ -1133,6 +1154,7 @@ function runInvDialogue(lines, onComplete) {
 
   const dlg = document.getElementById('invDialogue');
   dlg.classList.remove('hidden');
+  requestAnimationFrame(() => requestAnimationFrame(() => dlg.classList.add('visible')));
 
   showInvLine();
 }
@@ -1793,6 +1815,8 @@ function restartGame() {
   const caseBtn = document.getElementById('caseFileBtn');
   if (caseBtn) caseBtn.classList.add('locked');
   hideInvestigationChoice();
+  const dlg = document.getElementById('invDialogue');
+  if (dlg) { dlg.classList.remove('visible'); dlg.classList.add('hidden'); }
   memoryOverlayActive = false;
   discoveredObjects.clear();
   closeCaseFile();

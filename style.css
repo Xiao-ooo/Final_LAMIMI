@@ -1,6 +1,10 @@
 /* styles for The Last Witness
    organized by scene â€” intro, introduction, white room, memory, choice, ending */
 
+html {
+    font-size: clamp(18px, 1.6vw, 24px);
+}
+
    @font-face {
     font-family: 'Handwrite';
     src: url('handwrite.otf') format('opentype');
@@ -182,21 +186,28 @@ body::before {
     display: flex;
     flex-direction: column;
     max-width: 600px;
+    max-height: 82vh;
+    overflow-y: auto;
+    scrollbar-width: none;
+}
+
+.introduction-page::-webkit-scrollbar {
+    display: none;
 }
 
 .introduction-title {
-    font-size: 1.8em;
+    font-size: 1.55em;
     color: #ffffff;
     letter-spacing: 0.06em;
     line-height: 1.3;
-    margin-bottom: 1.5em;
+    margin-bottom: 1em;
     font-weight: normal;
 }
 
 .introduction-text {
-    font-size: 1.3em;
+    font-size: 1.1em;
     color: #dad6d1;
-    line-height: 2;
+    line-height: 1.75;
     white-space: pre-line;
 }
 
@@ -280,6 +291,27 @@ body::before {
     text-transform: uppercase;
     text-align: right;
     margin-top: 0.55em;
+}
+
+.intro-scroll-hint {
+    position: sticky;
+    bottom: 0;
+    font-size: 0.6em;
+    letter-spacing: 0.4em;
+    color: rgba(200, 169, 110, 0.75);
+    text-transform: uppercase;
+    text-align: center;
+    padding: 1.4em 0 0.4em;
+    margin-top: 0.5em;
+    background: linear-gradient(transparent, rgba(80, 80, 80, 0.9) 55%);
+    border-radius: 0 0 1em 1em;
+    pointer-events: none;
+    animation: intro-scroll-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes intro-scroll-pulse {
+    0%, 100% { opacity: 0.5; transform: translateY(0); }
+    50%       { opacity: 1;   transform: translateY(3px); }
 }
 
 /* â”€â”€ 03 Â· WHITE ROOM â”€â”€ */
@@ -454,6 +486,14 @@ body::before {
 /* investigator dialogue panel */
 .inv-dialogue {
     width: 100%;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.9s ease, transform 0.9s ease;
+}
+
+.inv-dialogue.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
 
 .inv-dialogue .dialogue-panel {
