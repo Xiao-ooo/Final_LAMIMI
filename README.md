@@ -35,9 +35,9 @@ Physical prop objects scattered around the installation space each hold a memory
 | Name | Role |
 |------|------|
 | **Xiao Xing** | Lead Web Development & Design · Core Architecture · Script Writing & Narrative Planning |
-| **Crystal Zhou** | Lead Web Development & Design · Core Architecture · Script Writing & Narrative Planning |
+| **Crystal Zhou** | Lead Web Development & Design · Core Architecture · Script Writing & Narrative Planning · Audio Asset|
 | **Candy Liu** | Web–Hardware Integration · Arduino NFC System · Script Writing & Narrative Planning |
-| **Nanjun Liu** | Web–Hardware Integration · Arduino NFC System |
+| **Nanjun Liu** | Hardware Integration · Arduino NFC System · Audio Asset |
 | **Jully Li** | Visual Design · Prop Design & Art Direction · Script Writing & Narrative Planning |
 
 ---
