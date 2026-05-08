@@ -1769,6 +1769,9 @@ function revealEnding(type) {
   testimonyEl.classList.add('dismissed');
   setTimeout(() => { testimonyEl.style.display = 'none'; }, 750);
 
+  const sceneEl = document.getElementById(`scene-ending-${type}`);
+  if (sceneEl) sceneEl.scrollTo({ top: 0, behavior: 'smooth' });
+
   renderEndingReport(type);
   const reportEl = document.getElementById(`ending-report-${type}`);
 

@@ -2,7 +2,7 @@
    organized by scene â€” intro, introduction, white room, memory, choice, ending */
 
 html {
-    font-size: clamp(18px, 1.6vw, 24px);
+    font-size: clamp(13px, 1.15vw, 17px);
 }
 
    @font-face {
