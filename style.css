@@ -371,7 +371,7 @@ body::before {
     z-index: 5;
     display: flex;
     flex-direction: column;
-    align-items: center;
+    align-items: flex-start;
     gap: 0.35em;
     margin-left: 4.5em;
     margin-bottom: -1.5em;
@@ -384,6 +384,7 @@ body::before {
     padding: 0;
     cursor: pointer;
     flex-shrink: 0;
+    transform-origin: center;
     transition: transform 0.2s ease, filter 0.2s ease, opacity 0.2s ease;
     line-height: 0;
 }
@@ -395,13 +396,14 @@ body::before {
 }
 
 .case-file-btn:hover {
-    transform: translateY(-4px) scale(1.25);
+    transform: scale(1.25);
     filter: brightness(1.15);
 }
 
-.case-file-btn:active {
-    transform: translateY(0);
-    filter: brightness(0.95);
+.case-file-btn:active,
+.case-file-btn.is-open {
+    transform: scale(1.25);
+    filter: brightness(1.1);
 }
 
 /* locked state — dim, not openable but still intercepts clicks so they don't pass through */

@@ -1547,19 +1547,24 @@ function closeMemoryOverlay() {
 function toggleCaseFile() {
   if (!caseFileUnlocked) { flashScanHint(); return; }
   const modal = document.getElementById('caseFileModal');
+  const btn = document.getElementById('caseFileBtn');
   if (!modal) return;
   const isHidden = modal.classList.contains('hidden');
   if (isHidden) {
     renderCaseFile();
     modal.classList.remove('hidden');
+    if (btn) btn.classList.add('is-open');
   } else {
     modal.classList.add('hidden');
+    if (btn) btn.classList.remove('is-open');
   }
 }
 
 function closeCaseFile() {
   const modal = document.getElementById('caseFileModal');
   if (modal) modal.classList.add('hidden');
+  const btn = document.getElementById('caseFileBtn');
+  if (btn) btn.classList.remove('is-open');
 }
 
 function renderCaseFile() {
