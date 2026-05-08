@@ -1457,9 +1457,16 @@ function showMemoryOverlayLine() {
 
   hint.classList.remove('show');
 
-  // create a new line div just like ending does
+  // dim the previously active line
+  const prevCurrent = linesEl.querySelector('.memory-overlay-line.current');
+  if (prevCurrent) {
+    prevCurrent.classList.remove('current');
+    prevCurrent.classList.add('dimmed');
+  }
+
+  // create a new line div
   const lineEl = document.createElement('div');
-  lineEl.className = 'memory-overlay-line';
+  lineEl.className = 'memory-overlay-line current';
   lineEl.textContent = line.text;
   linesEl.appendChild(lineEl);
 
@@ -1467,7 +1474,7 @@ function showMemoryOverlayLine() {
 
   const isLast = memOverlayLineIndex >= mem.lines.length - 1;
   setTimeout(() => {
-    hint.textContent = isLast ? 'Click to close ›' : 'Click to continue ›';
+    hint.textContent = isLast ? 'Click or press Space to close ›' : 'Click or press Space to continue ›';
     hint.classList.add('show');
   }, 700);
 }
