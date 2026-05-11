@@ -628,41 +628,30 @@ body::before {
 
 
 /* dev panel â€” bottom left, for testing without hardware */
-.dev-panel {
-    position: fixed;
-    bottom: 1.2em;
-    left: 1.2em;
-    z-index: 800;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4em;
+.dev-obj-visual {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+    pointer-events: none;
+    z-index: 5;
+    transition: filter 0.2s ease;
 }
 
-.dev-panel-label {
-    font-size: 0.52em;
-    letter-spacing: 0.4em;
-    color: #2a1a10;
-    text-transform: uppercase;
-    margin-bottom: 0.2em;
+.dev-obj-visual.glow {
+    filter: drop-shadow(0 0 12px rgba(255, 220, 120, 0.9));
 }
 
-.dev-panel button {
-    padding: 0.4em 0.9em;
-    background: rgba(10, 8, 6, 0.7);
-    border: 1px solid rgba(200, 169, 110, 0.2);
-    color: #4a3a28;
-    font-family: 'Handwrite', 'Georgia', serif;
-    font-size: 0.62em;
-    letter-spacing: 0.15em;
+.dev-obj-hit {
+    position: absolute;
+    background: transparent;
+    border: none;
     cursor: pointer;
-    text-align: left;
-    transition: all 0.2s;
-}
-
-.dev-panel button:hover {
-    border-color: rgba(200, 169, 110, 0.55);
-    color: #c8a96e;
-    background: rgba(200, 169, 110, 0.06);
+    z-index: 15;
+    outline: none;
 }
 
 /* â”€â”€ MEMORY OVERLAY â”€â”€ */
@@ -1331,17 +1320,3 @@ body::before {
     pointer-events: all;
 }
 
-.scan-flash {
-    position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(200, 169, 110, 0.1);
-    opacity: 0;
-    pointer-events: none;
-    z-index: 850;
-    transition: opacity 0.07s;
-}
-
-.scan-flash.flash {
-    opacity: 1;
-}

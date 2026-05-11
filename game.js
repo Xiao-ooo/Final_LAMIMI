@@ -837,6 +837,7 @@ function init() {
   renderIntroductionPage();
   renderCaseFile();
 
+
   document.addEventListener('mousedown', (event) => {
     if (event.target.closest('button')) {
       clickSfx.currentTime = 0; 

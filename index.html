@@ -13,7 +13,6 @@
 <body>
 
     <div class="fade-overlay" id="fadeOverlay"></div>
-    <div class="scan-flash" id="scanFlash"></div>
 
     <!-- MEMORY OVERLAY — triggered by NFC scan -->
     <div class="memory-overlay hidden" id="memoryOverlay">
@@ -29,14 +28,6 @@
     <!-- ══════════════════════════════════════════════
          DEV PANEL — simulate NFC scans without hardware
     ══════════════════════════════════════════════ -->
-    <!--<div class="dev-panel" id="devPanel">
-        <div class="dev-panel-label">DEV · Scan Object</div>
-        <button onclick="devScan('53C19186520001')">🚇 metro card</button>
-        <button onclick="devScan('53AC8C86520001')">📛 barista pin</button>
-        <button onclick="devScan('53B28486520001')">☕ coffee cup</button>
-        <button onclick="devScan('53A36287520001')">🧾 Rent Paper</button>
-        <button onclick="devScan('53C97A86520001')">🎵 AirPod</button>
-    </div> -->
 
     <!--01 · INTRO — Title card-->
     <div class="scene active" id="scene-intro">
@@ -75,6 +66,17 @@
     <!--03 · WHITE ROOM — Main investigation-->
     <div class="scene" id="scene-investigation">
         <div class="scene-bg"></div>
+        <img id="obj-badge-img"  src="asset/obj-badge.PNG"  class="dev-obj-visual">
+        <img id="obj-metro-img"  src="asset/obj-metro.PNG"  class="dev-obj-visual">
+        <img id="obj-cup-img"    src="asset/obj-cup.PNG"    class="dev-obj-visual">
+        <img id="obj-rent-img"   src="asset/obj-rent.PNG"   class="dev-obj-visual">
+        <img id="obj-airpod-img" src="asset/obj-airpod.PNG" class="dev-obj-visual">
+        <!-- hitboxes -->
+        <button class="dev-obj-hit" onclick="devScan('53AC8C86520001')" onmouseenter="document.getElementById('obj-badge-img').classList.add('glow')" onmouseleave="document.getElementById('obj-badge-img').classList.remove('glow')" style="left:23%;top:28%;width:7%;height:12%"></button>
+        <button class="dev-obj-hit" onclick="devScan('53C19186520001')" onmouseenter="document.getElementById('obj-metro-img').classList.add('glow')" onmouseleave="document.getElementById('obj-metro-img').classList.remove('glow')" style="left:10%;top:46%;width:9%;height:10%"></button>
+        <button class="dev-obj-hit" onclick="devScan('53C97A86520001')" onmouseenter="document.getElementById('obj-airpod-img').classList.add('glow')" onmouseleave="document.getElementById('obj-airpod-img').classList.remove('glow')" style="left:24%;top:47%;width:9%;height:15%"></button>
+        <button class="dev-obj-hit" onclick="devScan('53A36287520001')" onmouseenter="document.getElementById('obj-rent-img').classList.add('glow')" onmouseleave="document.getElementById('obj-rent-img').classList.remove('glow')" style="left:67%;top:20%;width:14%;height:21%"></button>
+        <button class="dev-obj-hit" onclick="devScan('53B28486520001')" onmouseenter="document.getElementById('obj-cup-img').classList.add('glow')" onmouseleave="document.getElementById('obj-cup-img').classList.remove('glow')" style="left:69%;top:46%;width:8%;height:19%"></button>
         <div class="investigation-ui">
 
             <div class="top-bar">

@@ -5,9 +5,8 @@ const app = express();
 const http = require('http').Server(app);
 const io = require('socket.io')(http);
 
-// const port = new SerialPort({ path: '/dev/cu.usbmodem1401', baudRate: 9600 });
-const port = new SerialPort({ path: '/dev/cu.usbmodem1101', baudRate: 9600 });
-const parser = port.pipe(new ReadlineParser({ delimiter: '\r\n' }));
+const SERIAL_PATH = '/dev/cu.usbmodem1101';
+const BAUD_RATE = 9600;
 
 const DATABASE = {
     "53C19186520001": { name: "object 1", info: "111111。", color: "#ff4d4d" },
@@ -18,19 +17,38 @@ const DATABASE = {
     "532B6E86520001": { name: "object 6", info: "666666。", color: "#2196f3" }
 };
 
+function connectSerial() {
+    const port = new SerialPort({ path: SERIAL_PATH, baudRate: BAUD_RATE });
+    const parser = port.pipe(new ReadlineParser({ delimiter: '\r\n' }));
+
+    port.on('open', () => console.log('串口已连接'));
+
+    port.on('close', () => {
+        console.log('串口断开，3秒后重连...');
+        setTimeout(connectSerial, 3000);
+    });
+
+    port.on('error', (err) => {
+        console.error('串口错误:', err.message);
+        setTimeout(connectSerial, 3000);
+    });
+
+    parser.on('data', (data) => {
+        const uid = data.trim();
+        console.log("NFC detected:", uid);
+        if (DATABASE[uid]) {
+            io.emit('show_info', { ...DATABASE[uid], uid });
+        }
+    });
+}
+
+connectSerial();
+
 // serve static files (CSS, JS, Scene images, etc.)
 app.use(express.static(__dirname));
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/index.html');
-});
-
-parser.on('data', (data) => {
-    const uid = data.trim();
-    console.log("NFC detected:", uid);
-    if (DATABASE[uid]) {
-        io.emit('show_info', { ...DATABASE[uid], uid });
-    }
 });
 
 http.listen(3000, () => {
