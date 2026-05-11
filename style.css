@@ -508,7 +508,7 @@ body::before {
     margin: 0 0.8em 0.8em;
     width: calc(100% - 2.4em);
     min-height: 33vh;
-    padding: 3.9em 5.2em 2.8em 6em;
+    padding: 5.5em 5.2em 2.8em 6em;
     cursor: pointer;
     display: flex;
     flex-direction: column;
