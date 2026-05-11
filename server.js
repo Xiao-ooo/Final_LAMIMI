@@ -21,7 +21,7 @@ function connectSerial() {
     const port = new SerialPort({ path: SERIAL_PATH, baudRate: BAUD_RATE });
     const parser = port.pipe(new ReadlineParser({ delimiter: '\r\n' }));
 
-    port.on('open', () => console.log('串口已连接'));
+    port.on('open', () => console.log('serial port opened'));
 
     port.on('close', () => {
         console.log('串口断开，3秒后重连...');
@@ -29,7 +29,7 @@ function connectSerial() {
     });
 
     port.on('error', (err) => {
-        console.error('串口错误:', err.message);
+        console.error('serial port error:', err.message);
         setTimeout(connectSerial, 3000);
     });
 
@@ -52,5 +52,5 @@ app.get('/', (req, res) => {
 });
 
 http.listen(3000, () => {
-    console.log('系统已启动！请在浏览器打开: http://localhost:3000');
+    console.log('Server listening at: http://localhost:3000');
 });
